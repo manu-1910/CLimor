@@ -51,10 +51,12 @@ class FragmentCommentReplies : UserMentionFragment() {
         private const val PARENT_COMMENT_KEY = "PARENT_COMMENT_KEY"
         private const val PARENT_COMMENT_ID_KEY = "PARENT_COMMENT_ID_KEY"
         private const val CHILD_REPLY_COMMENT_ID_KEY = "CHILD_REPLY_COMMENT_ID_KEY"
+        private const val CHILD_COMMENT_TO_HIGHLIGHT = "CHILD_COMMENT_TO_HIGHLIGHT"
         fun newInstance(
             cast: CastUIModel,
             parentComment: CommentUIModel,
-            replyComment: CommentUIModel? = null
+            replyComment: CommentUIModel? = null,
+            highLightCommentId: Int
         ): FragmentCommentReplies {
             return FragmentCommentReplies().apply {
                 arguments = bundleOf(
@@ -63,6 +65,7 @@ class FragmentCommentReplies : UserMentionFragment() {
                     PARENT_COMMENT_KEY to parentComment,
                     PARENT_COMMENT_ID_KEY to parentComment.id,
                     CHILD_REPLY_COMMENT_ID_KEY to replyComment?.id,
+                    CHILD_COMMENT_TO_HIGHLIGHT to highLightCommentId
                 )
             }
         }
@@ -81,6 +84,12 @@ class FragmentCommentReplies : UserMentionFragment() {
     private val adapter = GroupieAdapter()
     private val cast: CastUIModel by lazy { requireArguments().getParcelable(CAST_KEY)!! }
     private var castOwnerId = 0
+    private val highlightCommentId: Int by lazy {
+        requireArguments().getInt(
+            CHILD_COMMENT_TO_HIGHLIGHT,
+            -1
+        )
+    }
 
     override fun reload() {
         commentsViewModel.loadCommentById(parentCommentId)
@@ -142,7 +151,12 @@ class FragmentCommentReplies : UserMentionFragment() {
                 is MissingPermissions -> requestRecordPermissions(requireActivity())
                 is SendData -> {
                     if (it.filePath != null) {
-                        uploadWithAudio(it, castId, parentCommentId, CommentUIModel.OWNER_TYPE_COMMENT)
+                        uploadWithAudio(
+                            it,
+                            castId,
+                            parentCommentId,
+                            CommentUIModel.OWNER_TYPE_COMMENT
+                        )
 
                     } else if (it.existingComment != null) {
                         commentsViewModel.updateComment(it.existingComment.id, it.text)
@@ -167,6 +181,13 @@ class FragmentCommentReplies : UserMentionFragment() {
 
     private fun fillList(parentComment: CommentUIModel) {
         adapter.clear()
+        val replies = arrayListOf<CommentUIModel>()
+        replies.addAll(parentComment.innerComments)
+        var highlatableComment = replies.find { it.id == highlightCommentId }
+        highlatableComment?.let {
+            replies.remove(it)
+            replies.add(0, highlatableComment)
+        }
         adapter.add(
             CommentParentItem(
                 castOwnerId,
@@ -186,10 +207,11 @@ class FragmentCommentReplies : UserMentionFragment() {
                 },
                 onCommentListen = { commentId ->
                     viewModel.listenComment(commentId)
-                }
+                },
+                highlight = false
             )
         )
-        parentComment.innerComments.forEach { childComment ->
+        replies.forEach { childComment ->
             adapter.add(
                 CommentChildItem(
                     castOwnerId,
@@ -217,8 +239,9 @@ class FragmentCommentReplies : UserMentionFragment() {
                     },
                     onCommentListen = { commentId ->
                         viewModel.listenComment(commentId)
-                    }
-            )
+                    },
+                    highlight = highlightCommentId == childComment.id
+                )
             )
         }
     }
@@ -267,7 +290,7 @@ class FragmentCommentReplies : UserMentionFragment() {
 
         actionsViewModel.actionComment.observe(viewLifecycleOwner) { commentAction ->
             val ca = commentAction ?: return@observe
-            when(ca.type) {
+            when (ca.type) {
                 CommentActionType.Edit -> editComment(ca.comment)
                 else -> {
 
@@ -327,10 +350,17 @@ class FragmentCommentReplies : UserMentionFragment() {
     private fun showActions(
         comment: CommentUIModel,
         cast: CastUIModel,
-        isChild: Boolean) {
+        isChild: Boolean
+    ) {
 
         if (BuildConfig.DEBUG) {
-            Timber.d("Show comment actions for comment ID ${comment.id} on cast ID ${cast.id}. Current user is owner of comment -> ${isOwnerOf(comment)} and owner of cast -> ${isOwnerOf(cast)}.")
+            Timber.d(
+                "Show comment actions for comment ID ${comment.id} on cast ID ${cast.id}. Current user is owner of comment -> ${
+                    isOwnerOf(
+                        comment
+                    )
+                } and owner of cast -> ${isOwnerOf(cast)}."
+            )
         }
 
         val bundle = bundleOf(

@@ -35,18 +35,21 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.apollo.GeneralInfoRepository
+import com.limor.app.common.BaseActivity
 import com.limor.app.databinding.ActivityMainNewBinding
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
 import com.limor.app.dm.ChatManager
 import com.limor.app.dm.ChatRepository
 import com.limor.app.dm.SessionsViewModel
 import com.limor.app.events.OpenSharedPodcastEvent
+import com.limor.app.extensions.requireTag
 import com.limor.app.scenes.auth_new.util.JwtChecker
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.main_new.view_model.MainViewModel
 import com.limor.app.scenes.utils.*
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
+import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.main_new.view_model.MainActivityViewModel
 import com.limor.app.scenes.utils.ActivityPlayerViewManager
 import com.limor.app.scenes.utils.CommonsKt
@@ -64,11 +67,13 @@ import kotlinx.android.synthetic.main.activity_main_new.*
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
 import kotlinx.coroutines.*
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import javax.inject.Inject
 
-class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerViewManager {
+class MainActivityNew : BaseActivity(), HasSupportFragmentInjector, PlayerViewManager {
 
     @Inject
     lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
@@ -82,8 +87,8 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
     @Inject
     lateinit var infoRepository: GeneralInfoRepository
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+    /*@Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory*/
     val model: MainViewModel by viewModels { viewModelFactory }
 
     @Inject
@@ -449,60 +454,6 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         )
     }
 
-    private fun checkPodCastDynamicLink() {
-        val castId = PrefsHandler.getPodCastIdOfSharedLink(this)
-        if (castId != 0) {
-            PrefsHandler.savePodCastIdOfSharedLink(this, 0)
-            openDynamicLinkPodcast(castId)
-        } else {
-            FirebaseDynamicLinks.getInstance()
-                .getDynamicLink(intent)
-                .addOnSuccessListener(this) { pendingDynamicLinkData ->
-                    // even if the function implementation says otherwise the pendingDynamicLinkData
-                    // can be null, so do not remove the .? below
-                    pendingDynamicLinkData?.link?.getQueryParameter("id")?.toInt()?.let {
-                        openDynamicLinkPodcast(it)
-                    }
-                }
-                .addOnFailureListener(this) { e ->
-                    Timber.e(e)
-                }
-        }
-    }
-
-    private fun checkUserIdFromOneSignalNotification(){
-        val userId = PrefsHandler.getUserIdFromOneSignalNotification(this)
-        val userName = PrefsHandler.getUserNameFromOneSignalNotification(this) ?: ""
-        val tabId = PrefsHandler.getUserTabIdFromOneSignalNotification(this)
-        if(userId != 0){
-            UserProfileActivity.show(this, userName, userId,tabId)
-            PrefsHandler.saveUserIdFromOneSignalNotification(this, 0)
-            PrefsHandler.saveUserNameFromOneSignalNotification(this, "")
-            PrefsHandler.saveUserTabIdFromOneSignalNotification(this, 0)
-        } else{
-            OneSignal.setNotificationOpenedHandler { result ->
-                val id: Int? = result.notification.additionalData.getString("targetId").toInt()
-                var tab = 0
-                if (result.notification.additionalData.has("notificationType") && result.notification.additionalData.getString(
-                        "notificationType"
-                    ) == "patronRequest"
-                ) {
-                    tab = 1
-                }
-                if(result.notification.additionalData.getString("targetType").equals("user")){
-                    id?.let {
-
-                        UserProfileActivity.show(this,result.notification.additionalData.getString("initiatorUsername"),it,tab)
-                    }
-                } else{
-                    id?.let {
-                        openDynamicLinkPodcast(it)
-                    }
-                }
-            }
-        }
-    }
-
     override fun onDestroy() {
         activityPlayerViewManager?.stop()
         activityPlayerViewManager = null
@@ -514,7 +465,6 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
         activityPlayerViewManager?.showExtendedPlayer(it)
     }
 
-
     override fun onResume() {
         super.onResume()
         intent.extras?.getInt(AppNavigationManager.CAST_KEY)?.let { castId ->
@@ -525,8 +475,28 @@ class MainActivityNew : AppCompatActivity(), HasSupportFragmentInjector, PlayerV
                 }, 500)
             }
         }
-        checkPodCastDynamicLink()
-        checkUserIdFromOneSignalNotification()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onOpenSharedPodcastEvent(event: OpenSharedPodcastEvent) {
+        if(activityPlayerViewManager?.isPlayingSameCast(event.podcastId) == false){
+            showPlayer(
+                PlayerViewManager.PlayerArgs(
+                    PlayerViewManager.PlayerType.EXTENDED,
+                    event.podcastId
+                )
+            )
+        }
     }
 
     companion object{

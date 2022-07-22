@@ -36,6 +36,9 @@ object PrefsHandler {
     private const val KEY_JUST_LOGGED_IN = "just_logged_in"
     private const val KEY_CAN_SHOW_CATEGORY_SELECTION = "can_show_category_selection"
     private const val KEY_CAN_SHOW_GENDER_SELECTION = "can_show_gender_popup"
+    private const val KEY_COMMENT_ID = "comment_id"
+    private const val KEY_CHILD_COMMENT_ID = "child_comment_id"
+    private const val KEY_COMMENT_CAST_ID = "comment_cast_id"
 
     private fun sp(context: Context) = sharedPreferences(context)
 
@@ -82,7 +85,7 @@ object PrefsHandler {
     }
 
     fun getPodCastIdOfSharedLink(context: Context) =
-        sharedPreferences(context).getInt(LABEL_CAST_ID, 0)
+        sharedPreferences(context).getInt(LABEL_CAST_ID, -1)
 
     fun saveUserDeviceToken(context: Context, token: String) {
         sharedPreferences(context).edit(true) {
@@ -249,5 +252,29 @@ object PrefsHandler {
 
     fun canShowGenderSelection(context: Context) =
         sharedPreferences(context).getBoolean(KEY_CAN_SHOW_GENDER_SELECTION, false)
+
+    fun setChildCommentId(context: Context, id: Int){
+        sharedPreferences(context).edit(true){
+            putInt(KEY_CHILD_COMMENT_ID, id)
+        }
+    }
+
+    fun getChildCommentId(context: Context) = sharedPreferences(context).getInt(KEY_CHILD_COMMENT_ID, -1)
+
+    fun setCommentId(context: Context, id: Int){
+        sharedPreferences(context).edit(true){
+            putInt(KEY_COMMENT_ID, id)
+        }
+    }
+
+    fun getCommentId(context: Context) = sharedPreferences(context).getInt(KEY_COMMENT_ID, -1)
+
+    fun setCommentCastId(context: Context, id: Int){
+        sharedPreferences(context).edit(true){
+            putInt(KEY_COMMENT_CAST_ID, id)
+        }
+    }
+
+    fun getCommentCastId(context: Context) = sharedPreferences(context).getInt(KEY_COMMENT_CAST_ID, -1)
 
 }

@@ -27,6 +27,7 @@ class ParentCommentSection(
     val onLikeClick: (comment: CommentUIModel, liked: Boolean) -> Unit,
     val onUserMentionClick: (username: String, userId: Int) -> Unit,
     val onCommentListen: (commentId: Int) -> Unit,
+    val highlight: Boolean
 ) : Section() {
 
     init {
@@ -45,7 +46,8 @@ class ParentCommentSection(
                     // This is when user taps on three dots on a comment
                     onThreeDotsClick(c,i,this)
                 },
-                onCommentListen = onCommentListen
+                onCommentListen = onCommentListen,
+                highlight = highlight
             )
         )
         comment.innerComments.firstOrNull()?.let { childComment ->
@@ -63,7 +65,8 @@ class ParentCommentSection(
                         onChildThreeDotsClick(c,i,this)
                     },
                     onUserMentionClick = onUserMentionClick,
-                    onCommentListen = onCommentListen
+                    onCommentListen = onCommentListen,
+                    false
                 )
             )
             if (comment.innerComments.size > 1) {

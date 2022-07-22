@@ -12,6 +12,8 @@ import com.limor.app.R
 import com.limor.app.common.BaseActivity
 import com.limor.app.databinding.ActivityProfileBinding
 import com.limor.app.databinding.ContainerWithSwipeablePlayerBinding
+import com.limor.app.events.OpenSharedPodcastEvent
+import com.limor.app.extensions.dismissFragment
 import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragment
 import com.limor.app.scenes.utils.ActivityPlayerViewManager
 import com.limor.app.scenes.utils.PlayerViewManager
@@ -20,6 +22,9 @@ import com.limor.app.service.PlayerBinder
 import com.limor.app.uimodels.TagUIModel
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -61,6 +66,10 @@ class UserProfileActivity : BaseActivity(), HasSupportFragmentInjector, PlayerVi
 
     override fun supportFragmentInjector(): DispatchingAndroidInjector<Fragment> = fragmentInjector
 
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -128,8 +137,18 @@ class UserProfileActivity : BaseActivity(), HasSupportFragmentInjector, PlayerVi
         activityPlayerViewManager?.stopPreview(reset)
     }
 
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onOpenSharedPodcastEvent(event: OpenSharedPodcastEvent) {
+        finish()
     }
 
 }

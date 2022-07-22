@@ -20,14 +20,18 @@ class RootCommentsFragment : BottomSheetDialogFragment() {
 
     companion object {
         private const val CAST_KEY = "CAST_KEY"
-        fun newInstance(cast: CastUIModel): RootCommentsFragment {
+        private const val COMMENT_KEY = "COMMENT_KEY"
+        private const val CHILD_COMMENT_KEY = "CHILD_COMMENT_KEY"
+        fun newInstance(cast: CastUIModel, commentId: Int = -1, childCommentId: Int = -1): RootCommentsFragment {
             return RootCommentsFragment().apply {
-                arguments = bundleOf(CAST_KEY to cast)
+                arguments = bundleOf(CAST_KEY to cast, COMMENT_KEY to commentId, CHILD_COMMENT_KEY to childCommentId)
             }
         }
     }
 
     private val cast: CastUIModel by lazy { requireArguments().getParcelable(CAST_KEY)!! }
+    private val commentId: Int by lazy { requireArguments().getInt(COMMENT_KEY) }
+    private val childCommentId: Int by lazy { requireArguments().getInt(CHILD_COMMENT_KEY) }
 
     private var _binding: FragmentRootCommentsBinding? = null
     private val binding get() = _binding!!
@@ -46,7 +50,7 @@ class RootCommentsFragment : BottomSheetDialogFragment() {
         _binding = FragmentRootCommentsBinding.inflate(inflater, container, false)
 
         childFragmentManager.beginTransaction()
-            .replace(R.id.comment_container, FragmentComments.newInstance(cast))
+            .replace(R.id.comment_container, FragmentComments.newInstance(cast, commentId,childCommentId))
             .commit()
 
         return binding.root

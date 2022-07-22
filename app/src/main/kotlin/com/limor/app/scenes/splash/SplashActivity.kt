@@ -12,6 +12,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.firebase.ktx.Firebase
 import com.limor.app.App
+import com.limor.app.BuildConfig
 import com.limor.app.R
 import com.limor.app.common.BaseActivity
 import com.limor.app.common.SessionManager
@@ -89,42 +90,6 @@ class SplashActivity : BaseActivity() {
             finish()
             return
         }
-
-        OneSignal.setNotificationOpenedHandler { result ->
-            val id: Int? = result.notification.additionalData.getString("targetId").toInt()
-            var tabId = 0
-            if (result.notification.additionalData.has("notificationType") && result.notification.additionalData.getString("notificationType") == "patronRequest") {
-                tabId = 1
-            }
-            if(result.notification.additionalData.getString("targetType").equals("user")){
-                id?.let {
-                    PrefsHandler.saveUserIdFromOneSignalNotification(this, it)
-                    PrefsHandler.saveUserNameFromOneSignalNotification(this, result.notification.additionalData.getString("initiatorUsername"))
-                    PrefsHandler.saveUserTabIdFromOneSignalNotification(this, tabId)
-                }
-            } else{
-                id?.let {
-                    PrefsHandler.savePodCastIdOfSharedLink(this, it)
-                }
-            }
-        }
-
-        FirebaseDynamicLinks.getInstance()
-            .getDynamicLink(intent)
-            .addOnSuccessListener(this) { pendingDynamicLinkData ->
-                // Get deep link from result (may be null if no link is found)
-                val deepLink: Uri?
-                if (pendingDynamicLinkData != null) {
-                    deepLink = pendingDynamicLinkData.link
-                    val td: Int? = deepLink?.getQueryParameter("id")?.toInt()
-                    td?.let {
-                        PrefsHandler.savePodCastIdOfSharedLink(this, it)
-                    }
-
-                    Timber.d("DeepLink fetched $deepLink")
-                }
-            }
-            .addOnFailureListener(this) { e -> Timber.e(e) }
     }
 
     public override fun onDestroy() {

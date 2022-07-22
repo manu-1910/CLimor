@@ -45,6 +45,7 @@ class NotificationAdapter(val context: Context) :
     private lateinit var castCallback: (castId: Int?) -> Unit
     private lateinit var userCallback: (userId: Int?, username: String?, tab: Int) -> Unit
     private lateinit var notiReadCallback: (nId: Int?, read: Boolean) -> Unit
+    private lateinit var openCommentsSectionCallback: (commentId: Int, childCommentId: Int, castId: Int) -> Unit
     lateinit var noInternetAlertCallback: () -> Unit
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -220,6 +221,9 @@ class NotificationAdapter(val context: Context) :
         this.noInternetAlertCallback = callback
     }
 
+    fun addCommentsSectionCallback(callback: (commentId: Int, childCommentId: Int, castId: Int) -> Unit){
+        this.openCommentsSectionCallback = callback
+    }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var profilePic: CircleImageView = itemView.findViewById(R.id.iv_user)
@@ -247,7 +251,17 @@ class NotificationAdapter(val context: Context) :
                         )
                     }
                     when (noti.redirectTarget?.type) {
-                        "podcast" -> notificationAdapter.castCallback.invoke(noti.redirectTarget.id)
+                        "podcast" ->
+                            if(noti.commentId != -1){
+                                noti.redirectTarget.id?.let { it1 ->
+                                    notificationAdapter.openCommentsSectionCallback.invoke(noti.commentId, noti.childCommentId,
+                                        it1
+                                    )
+                                }
+                            }
+                            else {
+                                notificationAdapter.castCallback.invoke(noti.redirectTarget.id)
+                            }
                         "user" -> {
                             var tab = 0
                             if (noti.notificationType == "patronRequest" || noti.notificationType == "internalPatronInvitation") {
@@ -259,10 +273,11 @@ class NotificationAdapter(val context: Context) :
                                 tab
                             )
                         }
-                        "comment" -> notificationAdapter.userCallback.invoke(
-                            noti.redirectTarget.id,
-                            noti.initiator?.username, 0
-                        )
+                        "comment" ->
+                            notificationAdapter.userCallback.invoke(
+                                noti.redirectTarget.id,
+                                noti.initiator?.username, 0
+                            )
                         else -> Timber.d("Unable to handle this type")
                     }
                     notificationAdapter.updateRead(noti, position)

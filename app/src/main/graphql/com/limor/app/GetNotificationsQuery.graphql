@@ -22,6 +22,8 @@ query GetUserNotifications($limit: Int!,$offset:Int!) {
                 userId,
                 username
             }
+            commentId
+            childCommentId
         }
     }
 }

@@ -13,14 +13,17 @@ data class NotiUIMode(
     val redirectTarget: TargetUIModel?,
     val initiator: InitiatorUIModel?,
     val receiver: ReceiverUIModel?,
-    val message: String?
+    val message: String?,
+    val commentId: Int,
+    val childCommentId: Int
 ): Parcelable
 
 fun GetUserNotificationsQuery.Notification?.mapToUiModel(): NotiUIMode{
     return NotiUIMode(id = this?.id,read = this?.read,createdAt = this?.createdAt,notificationType = this?.notificationType,
     redirectTarget = this?.redirectTarget?.mapToUIModel(),
         initiator = this?.initiator?.mapToUIModel(),
-        receiver = this?.receiver?.mapToUIModel(), message = this?.message
+        receiver = this?.receiver?.mapToUIModel(), message = this?.message,
+        commentId = this?.commentId ?: -1, childCommentId = this?.childCommentId ?: -1
     )
 }
 

@@ -229,4 +229,9 @@ class ActivityPlayerViewManager(
     fun doAfterTransitionComplete(callback: () -> Unit) {
         completeCallbacks.add(callback)
     }
+
+    fun isPlayingSameCast(castId: Int, playerType: PlayerViewManager.PlayerType = PlayerViewManager.PlayerType.EXTENDED): Boolean{
+        return (isPlayerVisible && castId == currentArgs?.castId && playerType == PlayerViewManager.PlayerType.EXTENDED)
+    }
+
 }

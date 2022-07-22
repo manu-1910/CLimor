@@ -1,5 +1,9 @@
 package com.limor.app.scenes.main_new.fragments.comments
 
+import android.animation.Animator
+import android.animation.ArgbEvaluator
+import android.animation.ObjectAnimator
+import android.graphics.Color
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -7,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -42,14 +47,26 @@ class FragmentComments : UserMentionFragment() {
     companion object {
         val TAG = FragmentComments::class.qualifiedName
         private const val CAST_KEY = "CAST_KEY"
-        fun newInstance(cast: CastUIModel): FragmentComments {
+        private const val PARENT_COMMENT_ID = "PARENT_COMMENT_ID"
+        private const val CHILD_COMMENT_ID = "CHILD_COMMENT_ID"
+        fun newInstance(
+            cast: CastUIModel,
+            parentCommentId: Int = -1,
+            childCommentId: Int = -1
+        ): FragmentComments {
             return FragmentComments().apply {
-                arguments = bundleOf(CAST_KEY to cast)
+                arguments = bundleOf(
+                    CAST_KEY to cast,
+                    PARENT_COMMENT_ID to parentCommentId,
+                    CHILD_COMMENT_ID to childCommentId
+                )
             }
         }
     }
 
     private val cast: CastUIModel by lazy { requireArguments().getParcelable(CAST_KEY)!! }
+    private val parentCommentId: Int by lazy { requireArguments().getInt(PARENT_COMMENT_ID, -1) }
+    private val childCommentId: Int by lazy { requireArguments().getInt(CHILD_COMMENT_ID, -1) }
     lateinit var itemChildComment: CommentChildItem
     lateinit var itemParentComment: CommentParentItem
     var section: ParentCommentSection? = null
@@ -144,8 +161,23 @@ class FragmentComments : UserMentionFragment() {
         commentsViewModel.comments.observe(viewLifecycleOwner) { comments ->
             setInfoControls(comments.isNotEmpty())
 
+            val list = arrayListOf<CommentUIModel>()
+            list.addAll(comments)
+            if (childCommentId == -1) {
+                if (parentCommentId != -1) {
+                    val comment = list.find { it.id == parentCommentId }
+                    comment?.let { c ->
+                        list.remove(c)
+                        list.add(0, c)
+                    }
+                }
+            } else {
+                val parentComment = list.find { it.id == parentCommentId }
+                parentComment?.let { goToReplies(it) }
+            }
+
             adapter.update(
-                comments.map { it ->
+                list.map { it ->
                     ParentCommentSection(
                         castOwnerId,
                         comment = it,
@@ -178,7 +210,8 @@ class FragmentComments : UserMentionFragment() {
                         },
                         onCommentListen = { commentId ->
                             commentsViewModel.listenComment(commentId)
-                        }
+                        },
+                        highlight = childCommentId == -1 && parentCommentId != -1 && parentCommentId == it.id
                     )
                 }
             )
@@ -247,10 +280,17 @@ class FragmentComments : UserMentionFragment() {
         comment: CommentUIModel,
         cast: CastUIModel,
         section: ParentCommentSection,
-        isChild: Boolean) {
+        isChild: Boolean
+    ) {
 
         if (BuildConfig.DEBUG) {
-            Timber.d("Show comment actions for comment ID ${comment.id} on cast ID ${cast.id}. Current user is owner of comment -> ${isOwnerOf(comment)} and owner of cast -> ${isOwnerOf(cast)}.")
+            Timber.d(
+                "Show comment actions for comment ID ${comment.id} on cast ID ${cast.id}. Current user is owner of comment -> ${
+                    isOwnerOf(
+                        comment
+                    )
+                } and owner of cast -> ${isOwnerOf(cast)}."
+            )
         }
 
         this.section = section
@@ -272,7 +312,7 @@ class FragmentComments : UserMentionFragment() {
         parentComment: CommentUIModel,
         replyToComment: CommentUIModel? = null
     ) {
-        FragmentCommentReplies.newInstance(cast, parentComment, replyToComment)
+        FragmentCommentReplies.newInstance(cast, parentComment, replyToComment, childCommentId)
             .also {
                 parentFragmentManager.beginTransaction()
                     .add(R.id.comment_container, it)

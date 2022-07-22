@@ -95,6 +95,11 @@ class Notification : Fragment() {
         notificationAdapter.addNoInternetAlertCallback {
             showInternetErrorDialog()
         }
+        notificationAdapter.addCommentsSectionCallback { commentId, childCommentId, castId ->
+            if(activity is MainActivityNew){
+                (activity as MainActivityNew).openCommentsSections(commentId, childCommentId, castId)
+            }
+        }
         getNotifications()
     }
 
