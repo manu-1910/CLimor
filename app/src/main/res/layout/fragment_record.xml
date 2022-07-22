@@ -35,6 +35,8 @@
                 android:layout_width="match_parent"
                 android:background="#F0F3F8"
                 android:layout_marginTop="8dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:layout_height="match_parent" />
 
             <com.limor.app.scenes.utils.visualizer.RecordVisualizer
@@ -42,10 +44,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
-                app:maxAmp="200"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 app:approximateBarDuration="50"
                 app:barWidth="1.3dp"
                 app:loadedBarPrimeColor="@color/waveFormColor"
+                app:maxAmp="200"
                 app:spaceBetweenBar="2dp" />
 
             <com.limor.app.scenes.utils.visualizer.PlayVisualizer
@@ -53,6 +57,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:visibility="gone"
                 app:maxAmp="200"
                 app:approximateBarDuration="50"
