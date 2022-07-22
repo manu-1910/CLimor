@@ -19,6 +19,7 @@ import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
 import com.limor.app.scenes.auth_new.model.*
 import com.limor.app.scenes.auth_new.model.UserInfoProvider.Companion.userNameRegExCheck
 import com.limor.app.scenes.auth_new.util.*
+import com.tonyodev.fetch2.fetch.LiveSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -80,13 +81,21 @@ class AuthViewModelNew @Inject constructor(
     private var countDownTimer: CountDownTimer? = null
 
     fun resendCode() {
-        phoneAuthHandler.sendCodeToPhone(formattedPhone, resend = true, signInCase)
+        //phoneAuthHandler.sendCodeToPhone(formattedPhone, resend = true, signInCase)
+        userInfoProvider.sendOtpToPhoneNumber(viewModelScope, formattedPhone, signInCase)
+    }
+
+    val otpSent:LiveData<Boolean?>
+        get() = userInfoProvider.otpSent.apply { null }
+
+    fun sendOtp(){
+        userInfoProvider.sendOtpToPhoneNumber(viewModelScope, formattedPhone, signInCase)
     }
 
     fun enableResend() {
         _resendButtonEnableLiveData.postValue(false)
         _resendButtonCountDownLiveData.postValue(120)
-        countDownTimer = object : CountDownTimer(120000, 1000) {
+        countDownTimer = object : CountDownTimer(180000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 _resendButtonCountDownLiveData.postValue((millisUntilFinished / 1000).toInt())
             }
@@ -182,7 +191,12 @@ class AuthViewModelNew @Inject constructor(
 
     fun submitSmsCode(codes: List<String?>) {
         val value = codes.joinToString(separator = "")
-        phoneAuthHandler.enterCodeAndSignIn(value)
+        //phoneAuthHandler.enterCodeAndSignIn(value)
+        if (signInCase){
+            userInfoProvider.validateOtp(viewModelScope, formattedPhone, value.toInt())
+        } else{
+            userInfoProvider.validateOtpForSignUp(viewModelScope, formattedPhone, value.toInt(), _datePicked.value?.mills ?: 0)
+        }
     }
 
     /* Email validation*/
@@ -449,6 +463,15 @@ class AuthViewModelNew @Inject constructor(
         emailAuthHandler.handleDynamicLink(context, link, viewModelScope)
     }
 
+    val otpValid: LiveData<String?>
+        get() = userInfoProvider.otpValid
+
+    val otpInValid: LiveData<String?>
+        get() = userInfoProvider.otpInValid
+
+    fun signInWithToken(token: String){
+        phoneAuthHandler.signInWithCustomToken(token)
+    }
 
     /*User info*/
 

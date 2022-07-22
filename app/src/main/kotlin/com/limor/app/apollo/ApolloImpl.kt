@@ -33,7 +33,7 @@ class ApolloImpl(val client: ApolloClient) : Apollo {
         if (response.hasErrors()) {
             val errorMessage = response.errors!!.joinToString("\n") { it.message }
             val errorWithQueryPrefix =
-                if (getMutationSpecificError(queryName).isNotEmpty()) getMutationSpecificError(
+                if (getMutationSpecificError(queryName, errorMessage).isNotEmpty()) getMutationSpecificError(
                     queryName
                 ) else StringBuilder(queryName).append("-> ").append(errorMessage)
             val apiException = GraphqlClientException(errorWithQueryPrefix.toString())
@@ -51,9 +51,13 @@ fun showHumanizedErrorMessage(e: Throwable): String {
     return e.message?.split("->")?.last() ?: "Network client error"
 }
 
-fun getMutationSpecificError(queryName: String): String {
+fun getMutationSpecificError(queryName: String, errorMessage: String = ""): String {
     return when (queryName) {
         "UpdateUserNameMutation" -> "Already in Use"
+        "ValidateUserOtpMutation",
+        "ValidateUserOtpForSignUpMutation",
+        "SendOtpToPhoneNumberMutation",
+        "SendOtpForSignUpMutation" -> errorMessage
         else -> ""
     }
 }

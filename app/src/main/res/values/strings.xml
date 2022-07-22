@@ -30,7 +30,7 @@
     <string name="email_login_only_for_users"><font color='#FF5A4E'>Email login is only for users who have registered accounts before 2021</font></string>
     <string name="sign_in_here"><font color='#F9BB4B'><u>Sign in here</u></font></string>
     <string name="choose_country">Choose your country</string>
-    <string name="email_sign_in_message">This number is not registered yet. Try signing in with email instead.</string>
+    <string name="sign_in_error_try_sign_up">This number is not registered yet. Please sign up.</string>
     <string name="phone_number_already_exists">This phone number already exists</string>
     <string name="sign_in_with_phone_number">Already in use. Please Sign in.</string>
     <string name="sign_in_generic_error">Could not sign in. Generic error.</string>
@@ -1079,6 +1079,7 @@
     <string name="mandatory_email">Email*</string>
     <string name="mandatory_phone_number">Phone number*</string>
     <string name="cant_be_empty">Field can\'t be empty.</string>
+    <string name="invalid_otp">Invalid otp</string>
 
     <string name="oops">Oops!</string>
     <string name="something_went_wrong_message">An error occurred while trying the operation. Please check your internet connection and try again after sometime.</string>

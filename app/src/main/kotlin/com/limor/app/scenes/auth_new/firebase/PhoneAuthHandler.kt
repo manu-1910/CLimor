@@ -47,6 +47,11 @@ class PhoneAuthHandler @Inject constructor() :
     val codeSentListener: LiveData<Boolean>
         get() = _codeSentListener
 
+    private val _authCustomTokenResult =
+        MutableLiveData<Boolean?>().apply { value = null }
+    val authCustomTokenResult: LiveData<Boolean?>
+        get() = _authCustomTokenResult
+
     fun init(activityReference: WeakReference<Activity>, scope: CoroutineScope) {
         activityRef = activityReference
         this.scope = scope
@@ -230,6 +235,17 @@ class PhoneAuthHandler @Inject constructor() :
                     onPhoneAuthSuccess()
                 }
             }
+    }
+
+    fun signInWithCustomToken(token: String){
+        auth.signInWithCustomToken(token).addOnCompleteListener(activity!!){ task ->
+            val isSuccessfull = task.isSuccessful
+            if(isSuccessfull){
+                _smsCodeValidationPassed.postValue(true)
+            } else{
+                _smsCodeValidationPassed.postValue(false)
+            }
+        }
     }
 
     private fun onPhoneAuthSuccess() {

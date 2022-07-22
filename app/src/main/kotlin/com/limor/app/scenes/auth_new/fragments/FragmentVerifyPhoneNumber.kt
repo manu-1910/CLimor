@@ -2,6 +2,8 @@ package com.limor.app.scenes.auth_new.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +12,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -35,6 +38,7 @@ class FragmentVerifyPhoneNumber : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        model.enableResend()
         return inflater.inflate(R.layout.fragment_new_auth_phone_code, container, false)
     }
 
@@ -75,6 +79,9 @@ class FragmentVerifyPhoneNumber : Fragment() {
                 if (currentIndex != 0)
                     smsCodeEtList[currentIndex - 1].requestFocus()
             }
+        }
+        et.doAfterTextChanged {
+            resetErrorMessages()
         }
     }
 
@@ -141,26 +148,6 @@ class FragmentVerifyPhoneNumber : Fragment() {
             btnContinue.isEnabled = it
         })
 
-        model.smsCodeValidationErrorMessage.observe(viewLifecycleOwner, Observer {
-            val hasError = it?.hasError() ?: false
-            tvWrongCode.visibility = if (hasError) View.VISIBLE else View.GONE
-            if (hasError) tvWrongCode.text = it?.getLocalisedErrorMessage()
-            if (hasError && it?.canResend() == true) {
-                fabResendCode.isEnabled = true
-                model.cancelTimers()
-            }
-            smsCodeEtList.forEach { et ->
-                et.error = if (hasError) " " else null
-                et.editText!!.setTextColor(
-                    resources
-                        .getColor(if (hasError) R.color.error_stroke_color else R.color.black)
-                )
-            }
-
-            // re-enable the button as the user might want to enter a new OTP
-            btnContinue.isEnabled = true
-        })
-
         model.userInfoProviderErrorLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
             ToastMaker.showToast(requireContext(), it)
@@ -172,10 +159,6 @@ class FragmentVerifyPhoneNumber : Fragment() {
                 requireContext(),
                 NavigationBreakpoints.NAME_COLLECTION.destination
             )
-            /*navigateToFragmentByNavigationBreakpoints(
-                requireActivity(),
-                NavigationBreakpoints.NAME_COLLECTION.destination
-            )*/
         })
 
         model.navigationBreakPointLiveData.observe(viewLifecycleOwner, Observer {
@@ -206,11 +189,6 @@ class FragmentVerifyPhoneNumber : Fragment() {
                 tvResendCodeStatus.text =
                     getString(R.string.resend_code_in) + (if (it < 10) " 0$it seconds" else " $it seconds")
         })
-        model.phoneAuthHandler.codeSentListener.observe(viewLifecycleOwner, Observer {
-            if (it) {
-                model.enableResend()
-            }
-        })
 
         model.updateUserDOBLiveData.observe(viewLifecycleOwner) {
             if (it.isNullOrEmpty()) {
@@ -221,6 +199,60 @@ class FragmentVerifyPhoneNumber : Fragment() {
                 "Failure" -> showError(R.string.could_not_update_dob)
             }
         }
+
+        model.otpSent.observe(viewLifecycleOwner, Observer {
+            if(it == null)
+                return@Observer
+            if(it){
+                Toast.makeText(activity, "Code has been sent", Toast.LENGTH_LONG)
+                    .show()
+                model.enableResend()
+            } else{
+                Toast.makeText(context, "Error sending otp. Please try after some time.", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        })
+
+        model.otpValid.observe(viewLifecycleOwner, Observer {
+            if(it == null) return@Observer
+            if(it.isNotEmpty()) {
+               model.signInWithToken(it)
+            } else{
+                tvWrongCode.visibility = View.VISIBLE
+                tvWrongCode.text = "Invalid code"
+                fabResendCode.isEnabled = true
+                model.cancelTimers()
+                smsCodeEtList.forEach { et ->
+                    et.error = " "
+                    et.editText!!.setTextColor(
+                        resources
+                            .getColor(R.color.error_stroke_color)
+                    )
+                }
+
+                // re-enable the button as the user might want to enter a new OTP
+                btnContinue.isEnabled = true
+            }
+        })
+
+        model.otpInValid.observe(viewLifecycleOwner, Observer {
+            if(it == null) return@Observer
+            tvWrongCode.visibility = View.VISIBLE
+            tvWrongCode.text = getString(R.string.invalid_otp)
+            fabResendCode.isEnabled = true
+            model.cancelTimers()
+            smsCodeEtList.forEach { et ->
+                et.error = " "
+                et.editText!!.setTextColor(
+                    resources
+                        .getColor(R.color.error_stroke_color)
+                )
+            }
+
+            // re-enable the button as the user might want to enter a new OTP
+            btnContinue.isEnabled = true
+        })
+
     }
 
     private fun showError(messageResId: Int) {

@@ -52,6 +52,36 @@ class UserRepository @Inject constructor(val apollo: Apollo) {
         return queryResult?.data?.getUserByPhoneNumber?.isFound ?: false
     }
 
+    suspend fun sendOtpToPhoneNumber(phoneNumber: String): String?{
+        val query = SendOtpToPhoneNumberMutation(phoneNumber)
+        val queryResult = apollo.mutate(query)
+        val result = queryResult?.data?.sendOtpToPhoneNumber?.status
+        Timber.d("SendOtpToPhoneNumber -> ${queryResult?.data}")
+        return result
+    }
+
+    suspend fun validateUserOtp(phoneNumber: String, otp: Int): String?{
+        val query = ValidateUserOtpMutation(phoneNumber, otp)
+        val queryResult = apollo.mutate(query)
+        val result = queryResult?.data?.validateUserOtp?.customToken
+        return result
+    }
+
+    suspend fun sendOtpForSignUp(phoneNumber: String): String?{
+        val query = SendOtpForSignUpMutation(phoneNumber)
+        val queryResult = apollo.mutate(query)
+        val result = queryResult?.data?.sendOtpForSignUp?.status
+        Timber.d("SendOtpForSignUp -> ${queryResult?.data}")
+        return result
+    }
+
+    suspend fun validateUserOtpForSignUp(phoneNumber: String, otp: Int, dob: String): String?{
+        val query = ValidateUserOtpForSignUpMutation(phoneNumber, otp, dob)
+        val queryResult = apollo.mutate(query)
+        val result = queryResult?.data?.validateUserOtpForSignUp?.customToken
+        return result
+    }
+
     suspend fun updateUserProfile(
         genderId: Int,
         userName: String,

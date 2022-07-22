@@ -2,6 +2,8 @@ package com.limor.app.scenes.auth_new.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.telephony.TelephonyManager
 import android.text.Editable
 import android.text.SpannableString
@@ -10,10 +12,7 @@ import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.TextView
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -68,6 +67,7 @@ class FragmentSignEnterPhone : Fragment() {
                 if (tvSignInHereMsg.visibility == View.VISIBLE) {
                     tvSignInHereMsg.visibility = View.GONE
                 }
+
             }
         })
     }
@@ -129,9 +129,23 @@ class FragmentSignEnterPhone : Fragment() {
                 tvSignInHereMsg.visibility = View.VISIBLE
             } else {
                 model.setCurrentSignInMethod(SignInMethod.NONE)
-                model.submitPhoneNumber()
-                findNavController()
-                    .navigate(R.id.action_fragment_new_auth_phone_enter_to_fragment_new_auth_phone_code)
+                model.sendOtp()
+            }
+        })
+
+        model.otpSent.observe(viewLifecycleOwner, Observer {
+            if(it == null)
+                return@Observer
+            if(it){
+                Toast.makeText(activity, "Code has been sent", Toast.LENGTH_LONG)
+                    .show()
+                Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                    findNavController()
+                        .navigate(R.id.action_fragment_new_auth_phone_enter_to_fragment_new_auth_phone_code)
+                }, 2000)
+            } else{
+                Toast.makeText(context, "Error sending otp. Please try after some time.", Toast.LENGTH_SHORT)
+                    .show()
             }
         })
     }

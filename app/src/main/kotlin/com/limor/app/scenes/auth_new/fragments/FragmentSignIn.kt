@@ -2,6 +2,8 @@ package com.limor.app.scenes.auth_new.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.telephony.TelephonyManager
 import android.text.Editable
 import android.text.SpannableString
@@ -14,6 +16,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -73,6 +76,7 @@ class FragmentSignIn : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setFocusChanges()
         setClickListeners()
+        setTextWatchers()
         setUpInitialSignUpState()
         setPhoneChangeListener()
         setEmailChangedListeners()
@@ -82,6 +86,10 @@ class FragmentSignIn : Fragment() {
     private fun setFocusChanges() {
         clMain.onFocusChangeListener = AuthActivityNew.onFocusChangeListener()
         etPhoneCode.editText?.onFocusChangeListener = AuthActivityNew.onFocusChangeListener()
+    }
+
+    private fun setTextWatchers(){
+        etEnterPhoneInner.addTextChangedListener {  }
     }
 
     private fun setClickListeners() {
@@ -168,6 +176,7 @@ class FragmentSignIn : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 model.setPhoneChanged(s?.toString() ?: "")
                 etEnterPhone.error = null
+                tvExistingUserEmailSignInDesc.visibility = View.GONE
             }
         })
         etDobPickerInner.addTextChangedListener(object : AfterTextWatcher(){
@@ -244,47 +253,28 @@ class FragmentSignIn : Fragment() {
         model.phoneNumberExistsLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
             if (it) {
-                model.submitPhoneNumber()
-                findNavController()
-                    .navigate(R.id.action_fragment_new_auth_sign_in_to_fragment_new_auth_phone_code)
+                model.sendOtp()
             } else {
-                val description = resources.getString(R.string.email_sign_in_message)
-                val content = SpannableString(description)
-                content.setSpan(
-                    ForegroundColorSpan(resources.getColor(R.color.colorAccent)),
-                    55,
-                    60,
-                    0
-                )
-                content.setSpan(UnderlineSpan(), 55, 60, 0)
-                tvExistingUserEmailSignInDesc.setText(content, TextView.BufferType.SPANNABLE)
+                val description = resources.getString(R.string.sign_in_error_try_sign_up)
+                tvExistingUserEmailSignInDesc.text = description
                 tvExistingUserEmailSignInDesc.visibility = View.VISIBLE
                 tvNoEmailExistErrorDesc.visibility = View.GONE
-                etEnterPhone.setError(description)
+                etEnterPhone.error = description
             }
         })
 
-        model.currentEmailIsInUseLiveData.observe(viewLifecycleOwner, Observer {
-            if (it == null) return@Observer
-            if (it) {
-//                everything is ok, user email exists on firebase DB
-                model.sendFirebaseDynamicLinkToEmail(requireContext())
-                return@Observer
+        model.otpSent.observe(viewLifecycleOwner, Observer {
+            if(it == null) return@Observer
+            if(it){
+                Toast.makeText(activity, "Code has been sent", Toast.LENGTH_LONG)
+                    .show()
+                Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                    findNavController().navigate(R.id.action_fragment_new_auth_sign_in_to_fragment_new_auth_phone_code)
+                }, 2000)
+            } else{
+                Toast.makeText(context, "Error sending otp. Please try after some time.", Toast.LENGTH_SHORT)
+                    .show()
             }
-            Timber.d("currentEmailIsInUseLiveData -> $it")
-            val description = resources.getString(R.string.no_account_fount_with_email)
-            val content = SpannableString(description)
-            content.setSpan(
-                ForegroundColorSpan(resources.getColor(R.color.colorAccent)),
-                40,
-                description.length,
-                0
-            )
-            content.setSpan(UnderlineSpan(), 40, description.length, 0)
-            tvNoEmailExistErrorDesc.setText(content, TextView.BufferType.SPANNABLE)
-            tvNoEmailExistErrorDesc.visibility = View.VISIBLE
-            tvExistingUserEmailSignInDesc.visibility = View.GONE
-            etEnterEmail.error = description
         })
     }
 }

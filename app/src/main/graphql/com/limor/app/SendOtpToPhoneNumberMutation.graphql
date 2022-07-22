@@ -1,0 +1,6 @@
+mutation SendOtpToPhoneNumber($phoneNumber: String!){
+    sendOtpToPhoneNumber(phoneNumber: $phoneNumber){
+        status
+        message
+    }
+}

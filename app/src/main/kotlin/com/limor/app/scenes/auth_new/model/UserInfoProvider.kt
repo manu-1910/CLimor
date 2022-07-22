@@ -66,6 +66,18 @@ class UserInfoProvider @Inject constructor(
     val userExists: LiveData<Boolean?>
         get() = _userExistsLiveData
 
+    private val _otpSent = MutableLiveData<Boolean?>().apply { value = null }
+    val otpSent: LiveData<Boolean?>
+        get() = _otpSent
+
+    private val _otpValidWithToken = MutableLiveData<String?>().apply { value = null }
+    val otpValid: LiveData<String?>
+        get() = _otpValidWithToken
+
+    private val _otpInValid = MutableLiveData<String?>().apply { value = null }
+    val otpInValid: LiveData<String?>
+        get() = _otpInValid
+
     private val _updateUserFirstNameAndLastNameLiveData =
         MutableLiveData<String?>().apply { value = null }
     val updateUserFirstNameAndLastNameLiveData: LiveData<String?>
@@ -191,6 +203,68 @@ class UserInfoProvider @Inject constructor(
                 _userExistsLiveData.postValue(null)
             }
 
+        }
+    }
+
+    fun sendOtpToPhoneNumber(scope: CoroutineScope, phoneNumber: String, isSignInCase: Boolean, resend: Boolean = false){
+        scope.launch {
+            if (phoneNumber.isEmpty()) {
+                _otpSent.postValue(false)
+                delay(500)
+                _otpSent.postValue(null)
+            }
+            try {
+                val response = if(isSignInCase) userRepository.sendOtpToPhoneNumber(phoneNumber) else userRepository.sendOtpForSignUp(phoneNumber)
+                if (BuildConfig.DEBUG) {
+                    println("Sending otp to $phoneNumber -> $response")
+                }
+                _otpSent.postValue(response?.trim()?.lowercase().equals("success"))
+                delay(500)
+                _otpSent.postValue(null)
+            } catch (exception: Exception) {
+                exception.printStackTrace()
+                _otpSent.postValue(false)
+                delay(500)
+                _otpSent.postValue(null)
+            }
+        }
+    }
+
+    fun validateOtp(scope: CoroutineScope, phoneNumber: String, otp: Int){
+        scope.launch(Dispatchers.Default) {
+            try{
+                val response = userRepository.validateUserOtp(phoneNumber, otp)
+                if(BuildConfig.DEBUG){
+                    println("Validating otp for sign in case $response")
+                }
+                _otpValidWithToken.postValue(response)
+                delay(500)
+                _otpValidWithToken.postValue(null)
+            } catch (e: Exception){
+                e.printStackTrace()
+                _otpInValid.postValue(e.localizedMessage)
+                delay(500)
+                _otpInValid.postValue(null)
+            }
+        }
+    }
+
+    fun validateOtpForSignUp(scope: CoroutineScope, phoneNumber: String, otp: Int, dob: Long){
+        scope.launch(Dispatchers.Default) {
+            try{
+                val response = userRepository.validateUserOtpForSignUp(phoneNumber, otp, parseForUserCreation(dob))
+                if(BuildConfig.DEBUG){
+                    print("Validating otp for sign up $response")
+                }
+                _otpValidWithToken.postValue(response)
+                delay(500)
+                _otpValidWithToken.postValue(null)
+            } catch (e: Exception){
+                e.printStackTrace()
+                _otpInValid.postValue(e.localizedMessage)
+                delay(500)
+                _otpInValid.postValue(null)
+            }
         }
     }
 

@@ -1,0 +1,6 @@
+mutation SendOtpForSignUp($phoneNumber: String!){
+    sendOtpForSignUp(phoneNumber: $phoneNumber){
+        status
+        message
+    }
+}

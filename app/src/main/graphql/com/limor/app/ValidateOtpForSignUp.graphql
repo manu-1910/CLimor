@@ -1,0 +1,7 @@
+mutation ValidateUserOtpForSignUp($phoneNumber: String!, $otp: Int!, $dob: String!){
+    validateUserOtpForSignUp(phoneNumber: $phoneNumber, otp: $otp, dob: $dob){
+        status
+        message
+        customToken
+    }
+}
