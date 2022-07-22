@@ -96,6 +96,7 @@ import com.limor.app.uimodels.TagUIModel
 import com.limor.app.uimodels.UIDraft
 import com.limor.app.uimodels.UILocations
 import com.limor.app.uimodels.UISimpleCategory
+import com.limor.app.util.NetworkConnectionLiveData
 import com.yalantis.ucrop.UCrop
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.cancelButton
@@ -209,6 +210,8 @@ class PublishFragment : BaseFragment() {
     private var isTagsSelected: Boolean = false
 
     private var selectedPhotoFile: File? = null
+
+    private var isUserFetched: Boolean = false
 
     companion object {
         const val CAMERA_REQUEST = 256
@@ -348,7 +351,7 @@ class PublishFragment : BaseFragment() {
     private fun getUserinfo() {
         publishViewModel.getUserProfile().observe(viewLifecycleOwner) {
             CommonsKt.user = it
-
+            isUserFetched = true
             updateUIState()
             fetchPrices()
 
@@ -397,6 +400,13 @@ class PublishFragment : BaseFragment() {
     private fun subscribeToViewModel() {
         locationViewModel.locationData.observe(viewLifecycleOwner) {
             onNewLocation(it)
+        }
+        NetworkConnectionLiveData(requireContext()).observe(viewLifecycleOwner){
+            if(it && !isUserFetched){
+                Handler(Looper.getMainLooper()).postDelayed(Runnable{
+                    getUserinfo()
+                }, 2000)
+            }
         }
     }
 

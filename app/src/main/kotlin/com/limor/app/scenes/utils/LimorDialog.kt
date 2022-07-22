@@ -100,6 +100,12 @@ class LimorDialog(private val layoutInflater: LayoutInflater) {
         }
     }
 
+    fun setDismissListener(onDismiss: (() -> Unit)? = null){
+        dialog.setOnDismissListener {
+            onDismiss?.invoke()
+        }
+    }
+
     private fun adjustUI() {
         if (dialogView.buttons.childCount == 1) {
             dialogView.buttons.addView(getFiller(), 0)

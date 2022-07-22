@@ -1080,4 +1080,9 @@
     <string name="mandatory_phone_number">Phone number*</string>
     <string name="cant_be_empty">Field can\'t be empty.</string>
 
+    <string name="oops">Oops!</string>
+    <string name="something_went_wrong_message">An error occurred while trying the operation. Please check your internet connection and try again after sometime.</string>
+
+    <string name="close_app">Close app</string>
+    
 </resources>

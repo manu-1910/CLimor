@@ -3,6 +3,8 @@ package com.limor.app.apollo
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.exception.ApolloException
+import com.apollographql.apollo.exception.ApolloNetworkException
+import com.limor.app.App
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resume
@@ -29,5 +31,10 @@ suspend fun <T> ApolloCall<T>.await(): Response<T> = suspendCancellableCoroutine
                 continuation.resumeWithException(e)
             }
         }
+
+        override fun onNetworkError(e: ApolloNetworkException) {
+            App.instance.showSomeThingWentWrongPopUp()
+        }
+
     })
 }

@@ -3,7 +3,11 @@ package com.limor.app
 import android.app.Activity
 import android.app.Application
 import android.app.Service
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -15,6 +19,9 @@ import com.limor.app.di.AppInjector
 import com.limor.app.di.components.AppComponent
 import com.limor.app.dm.ChatManager
 import com.limor.app.scenes.auth_new.util.PrefsHandler
+import com.limor.app.scenes.main.fragments.record.RecordActivity
+import com.limor.app.scenes.splash.SplashActivity
+import com.limor.app.scenes.utils.LimorDialog
 import com.limor.app.service.PlayerBinder
 import com.limor.app.util.AppState
 import com.limor.app.util.CrashReportingTree
@@ -26,14 +33,17 @@ import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
 import dagger.android.HasServiceInjector
 import io.realm.*
+import org.jetbrains.anko.layoutInflater
 import timber.log.Timber
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 interface MediaPlayerHandler {
     fun interruptPlaying()
 }
 
-class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObserver {
+class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObserver,
+    Application.ActivityLifecycleCallbacks {
     @Inject
     lateinit var activityInjector: DispatchingAndroidInjector<Activity>
     @Inject
@@ -47,6 +57,10 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
     private var realm: Realm? = null
     lateinit var firebaseAnalytics: FirebaseAnalytics
     var merlinsBeard: MerlinsBeard? = null
+
+    var activity: Activity? = null
+
+    private val errorShown = AtomicBoolean(false)
 
     override fun activityInjector(): DispatchingAndroidInjector<Activity> = activityInjector
     override fun serviceInjector(): AndroidInjector<Service> = serviceInjector
@@ -126,6 +140,8 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
         // OneSignal Initialization
         OneSignal.initWithContext(this);
         OneSignal.setAppId(BuildConfig.ONE_SIGNAL_APP_ID);
+
+        registerActivityLifecycleCallbacks(this)
     }
 
     @OnLifecycleEvent(androidx.lifecycle.Lifecycle.Event.ON_STOP)
@@ -205,6 +221,45 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
                 draftSchema.addField("price", String::class.java)
             }
             println("Realm --> $oldVersion -> $newVersion")
+        }
+    }
+
+    override fun onActivityCreated(p0: Activity, p1: Bundle?) {}
+
+    override fun onActivityStarted(p0: Activity) {}
+
+    override fun onActivityResumed(p0: Activity) {
+        activity = p0
+    }
+
+    override fun onActivityPaused(p0: Activity) {}
+
+    override fun onActivityStopped(p0: Activity) {}
+
+    override fun onActivitySaveInstanceState(p0: Activity, p1: Bundle) {}
+
+    override fun onActivityDestroyed(p0: Activity) {}
+
+    fun showSomeThingWentWrongPopUp(){
+        if(activity !is SplashActivity && !errorShown.getAndSet(true)){
+            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                activity?.layoutInflater?.let {
+                    LimorDialog(it).apply {
+                        setTitle(R.string.oops)
+                        setMessage(R.string.something_went_wrong_message)
+                        setIcon(R.drawable.ic_alert)
+                        addButton(R.string.close_app, activity !is RecordActivity) {
+                            activity?.finishAndRemoveTask()
+                        }
+                        setDismissListener {
+                            errorShown.set(false)
+                        }
+                        if(activity is RecordActivity){
+                            addButton(R.string.cancel, true)
+                        }
+                    }.show()
+                }
+            }, 1500)
         }
     }
 
