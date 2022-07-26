@@ -17,6 +17,7 @@ import android.net.Uri
 import android.webkit.URLUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import com.android.billingclient.api.ProductDetails
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.limor.app.dm.ChatMessage
 import com.limor.app.dm.ChatSessionWithUser
@@ -24,11 +25,13 @@ import com.limor.app.dm.ChatTarget
 import com.limor.app.dm.ChatWithData
 import com.limor.app.extensions.isToday
 import com.limor.app.extensions.loadCircleImage
+import com.limor.app.uimodels.CastUIModel
 import java.text.SimpleDateFormat
 
 class ChatAdapter(
     private val context: Context,
-    private var chatData: ChatWithData
+    private var chatData: ChatWithData,
+    private val onCastClick: (id: Int) -> Unit
 ) : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DiffCallback()) {
 
     init {
@@ -103,17 +106,7 @@ class ChatAdapter(
     }
 
     private fun openPodcast(podcastId: Int) {
-        val activity = context as? Activity ?: return
-
-        Intent().apply {
-            putExtra(ChatActivity.EXTRA_CHAT_ACTION, ChatActivity.ACTION_OPEN_PODCAST)
-            putExtra(ChatActivity.EXTRA_PODCAST_ID, podcastId)
-        }.also {
-            activity.apply {
-                setResult(Activity.RESULT_OK, it)
-                finish()
-            }
-        }
+        onCastClick(podcastId)
     }
 
     private fun openUrl(url: String) {

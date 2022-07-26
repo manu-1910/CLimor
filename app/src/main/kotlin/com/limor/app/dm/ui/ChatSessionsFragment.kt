@@ -8,14 +8,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.limor.app.BuildConfig
+import com.limor.app.R
 import com.limor.app.common.BaseFragment
 import com.limor.app.databinding.FragmentChatSessionsBinding
 import com.limor.app.dm.ChatSessionWithUser
 import com.limor.app.dm.ChatTarget
 import com.limor.app.dm.SessionsViewModel
+import com.limor.app.dm.ui.ChatFragment.Companion.KEY_LIMOR_USER_ID
 import com.limor.app.events.OpenSharedPodcastEvent
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.utils.PlayerViewManager
@@ -43,8 +47,8 @@ class ChatSessionsFragment : BaseFragment() {
             if (BuildConfig.DEBUG) {
                 println("chatLauncher.onActivityResult -> ${result.data}")
             }
-            if (result.resultCode == Activity.RESULT_OK && result.data?.hasExtra(ChatActivity.EXTRA_CHAT_ACTION) == true) {
-                val podcastId = result.data!!.getIntExtra(ChatActivity.EXTRA_PODCAST_ID, 0)
+            if (result.resultCode == Activity.RESULT_OK && result.data?.hasExtra(ChatFragment.EXTRA_CHAT_ACTION) == true) {
+                val podcastId = result.data!!.getIntExtra(ChatFragment.EXTRA_PODCAST_ID, 0)
                 if (podcastId > 0) {
                     openPodcast(podcastId)
                 }
@@ -105,7 +109,7 @@ class ChatSessionsFragment : BaseFragment() {
     }
 
     private fun startChat(limorUserId: Int) {
-        chatLauncher.launch(ChatActivity.getStartIntent(requireContext(), limorUserId))
+        findNavController().navigate(R.id.navigation_chat_session, bundleOf(KEY_LIMOR_USER_ID to limorUserId))
     }
 
     private fun setViews() {

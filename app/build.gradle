@@ -126,7 +126,7 @@ android {
 
             buildConfigField "String", "FIREBASE_STORAGE_URL", '"gs://limor-5439b.appspot.com/"'
 
-            buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://devlimorapp.page.link"'
+            buildConfigField "String", "LIMOR_DOMAIN_URL", '"https://limorapistaging.page.link"'
             buildConfigField "String", "LIMOR_WEB_APP", '"https://limor-5439b.web.app"'
 
             buildConfigField "String", "CHAT_USER_ID_PREFIX", '"development"'

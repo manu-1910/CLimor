@@ -129,6 +129,12 @@
         tools:layout="@layout/fragment_dummy" />
 
     <fragment
+        android:id="@+id/navigation_chat_session"
+        android:name="com.limor.app.dm.ui.ChatFragment"
+        android:label="Chat Fragment"
+        tools:layout="@layout/fragment_chat" />
+
+    <fragment
         android:id="@+id/navigation_profile"
         android:name="com.limor.app.scenes.main.fragments.profile.UserProfileFragment"
         android:label="ProfileFragment"

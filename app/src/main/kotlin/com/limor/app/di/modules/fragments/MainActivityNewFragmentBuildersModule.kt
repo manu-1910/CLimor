@@ -1,5 +1,6 @@
 package com.limor.app.di.modules.fragments
 
+import com.limor.app.dm.ui.ChatFragment
 import com.limor.app.scenes.main_new.fragments.FragmentRecastUsers
 import com.limor.app.dm.ui.ChatSessionsFragment
 import com.limor.app.dm.ui.ShareFragment
@@ -101,6 +102,12 @@ abstract class MainActivityNewFragmentBuildersModule {
 
     @ContributesAndroidInjector
     abstract fun contributeChatSessionsFragmentInjector(): ChatSessionsFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeChatFragmentInjector(): ChatFragment
+
+    @ContributesAndroidInjector
+    abstract fun contributeFragmentPopup(): FragmentPodcastPopup
 
     @ContributesAndroidInjector
     abstract fun contributeManagePatronFragmentInjector(): ManagePatronFragment

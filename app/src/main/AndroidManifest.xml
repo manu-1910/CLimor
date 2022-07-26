@@ -49,10 +49,10 @@
             android:name=".EditCastActivity"
             android:theme="@style/MaterialMainTheme.FullScreen"></activity>
 
-        <activity
+        <!--<activity
             android:name=".dm.ui.ChatActivity"
             android:theme="@style/MaterialMainTheme.FullScreen"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />-->
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -284,7 +284,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="limorapp.page.link"
+                    android:host="limorapistaging.page.link"
                     android:path="/open"
                     android:scheme="https" />
             </intent-filter>

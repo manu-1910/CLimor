@@ -49,6 +49,8 @@ import com.limor.app.scenes.main.fragments.discover.hashtag.DiscoverHashtagFragm
 import com.limor.app.scenes.main_new.view_model.MainViewModel
 import com.limor.app.scenes.utils.*
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
+import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
+import com.limor.app.scenes.main_new.fragments.FragmentPodcastPopup
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.main_new.view_model.MainActivityViewModel
 import com.limor.app.scenes.utils.ActivityPlayerViewManager
@@ -432,10 +434,8 @@ class MainActivityNew : BaseActivity(), HasSupportFragmentInjector, PlayerViewMa
                 openCast(cast.id)
 
             } else if (cast.patronCast == true && cast.patronDetails?.purchased == false) {
-                cast.owner?.let {
-                    UserProfileActivity.show(this, it.username ?: "", it.id, 1)
-                }
-
+                val dialog = FragmentPodcastPopup.newInstance(cast.id)
+                dialog.show(supportFragmentManager, FragmentPodcastPopup.TAG)
             } else {
                 openCast(cast.id)
             }

@@ -27,6 +27,7 @@ import com.limor.app.playlists.PlaylistCastsAdapter
 import com.limor.app.playlists.SaveToPlaylistFragment
 import com.limor.app.playlists.models.PlaylistUIModel
 import com.limor.app.scenes.auth_new.util.PrefsHandler
+import com.limor.app.scenes.main_new.fragments.FragmentPodcastPopup
 import com.limor.app.scenes.main_new.view.MarginItemDecoration
 import com.limor.app.scenes.utils.FragmentCreatePlaylist
 
@@ -184,14 +185,10 @@ class FragmentPlaylistDetails : Fragment(), Injectable {
 
         if (podcast.isPatronCast && !podcast.isPurchased) {
 
-            LimorDialog(layoutInflater).apply {
-                setTitle(R.string.purchase_cast_title)
-                setMessage(R.string.purchase_cast_description)
-                setIcon(R.drawable.ic_purchase)
-                addButton(R.string.ok, false)
-            }.show()
+            val dialog = FragmentPodcastPopup.newInstance(podcast.id)
+            dialog.show(parentFragmentManager, FragmentPodcastPopup.TAG)
 
-            return;
+            return
         }
 
         val result = arrayListOf<PlaylistCastUIModel>()

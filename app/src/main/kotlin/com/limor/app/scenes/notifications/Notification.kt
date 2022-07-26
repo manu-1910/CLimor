@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.viewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -20,9 +21,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.R
 import com.limor.app.databinding.FragmentNotificationBinding
+import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileFragment
 import com.limor.app.scenes.main_new.MainActivityNew
+import com.limor.app.scenes.main_new.fragments.FragmentPodcastPopup
+import com.limor.app.scenes.main_new.view_model.MainActivityViewModel
 import com.limor.app.uimodels.NotiUIMode
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.dialog_error_publish_cast.view.*
@@ -44,6 +48,8 @@ class Notification : Fragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val notificationViewModel: NotificationViewModel by viewModels { viewModelFactory }
+
+    private val mainModel: MainActivityViewModel by viewModels { viewModelFactory }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -80,7 +86,19 @@ class Notification : Fragment() {
 
         notificationAdapter.openCastCallback {
             it?.let { castId ->
-                (activity as MainActivityNew).openExtendedPlayer(castId)
+                mainModel.loadCast(castId).observe(this) { cast ->
+                    if (cast == null) {
+                        return@observe
+                    }
+                    if (cast.owner?.id == PrefsHandler.getCurrentUserId(requireContext())) {
+                        (activity as MainActivityNew).openExtendedPlayer(castId)
+                    } else if (cast.patronCast == true && cast.patronDetails?.purchased == false) {
+                        val dialog = FragmentPodcastPopup.newInstance(cast.id)
+                        dialog.show(parentFragmentManager, FragmentPodcastPopup.TAG)
+                    } else {
+                        (activity as MainActivityNew).openExtendedPlayer(castId)
+                    }
+                }
             }
         }
         notificationAdapter.addUserTypeCallback{

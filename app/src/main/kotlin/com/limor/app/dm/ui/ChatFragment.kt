@@ -1,27 +1,36 @@
 package com.limor.app.dm.ui
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.limor.app.BuildConfig
 import com.limor.app.R
-import com.limor.app.databinding.ActivityChatBinding
+import com.limor.app.common.BaseFragment
+import com.limor.app.databinding.FragmentChatBinding
 import com.limor.app.dm.ChatManager
 import com.limor.app.dm.ChatSessionWithUser
 import com.limor.app.dm.ChatWithData
 import com.limor.app.dm.SessionsViewModel
 import com.limor.app.extensions.loadCircleImage
+import com.limor.app.scenes.auth_new.util.PrefsHandler
+import com.limor.app.scenes.main.viewmodels.PodcastViewModel
+import com.limor.app.scenes.main_new.fragments.DialogPodcastMoreActions
+import com.limor.app.scenes.main_new.fragments.FragmentPodcastPopup
+import com.limor.app.scenes.utils.PlayerViewManager
+import com.limor.app.uimodels.CastUIModel
 import com.limor.app.util.SoundType
 import com.limor.app.util.Sounds
-import dagger.android.AndroidInjection
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
@@ -30,7 +39,7 @@ import reactivecircus.flowbinding.android.widget.textChangeEvents
 import javax.inject.Inject
 
 @FlowPreview
-class ChatActivity : AppCompatActivity() {
+class ChatFragment : BaseFragment() {
 
     private var coroutineJob: Job = Job()
     private val scope = CoroutineScope(Dispatchers.IO + coroutineJob)
@@ -38,11 +47,19 @@ class ChatActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val chat: SessionsViewModel by viewModels { viewModelFactory }
+    private val podcastViewModel: PodcastViewModel by viewModels { viewModelFactory }
 
     @Inject
     lateinit var chatManager: ChatManager
 
-    private lateinit var binding: ActivityChatBinding
+    private val userId: Int by lazy {
+        requireArguments().getInt(
+            ChatFragment.KEY_LIMOR_USER_ID,
+            -1
+        )
+    }
+
+    private lateinit var binding: FragmentChatBinding
     private var hasSetHeader = false;
 
     private var chatAdapter: ChatAdapter? = null
@@ -53,33 +70,35 @@ class ChatActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+    }
 
-        AndroidInjection.inject(this)
-
-        binding = ActivityChatBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentChatBinding.inflate(layoutInflater)
 
         setViews()
 
         getSession()
+        return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 
     private fun getSession() {
-        if (!intent.hasExtra(KEY_LIMOR_USER_ID)) {
-            finish()
+        if (userId == -1) {
+            findNavController().navigateUp()
             return
         }
 
-        val limorUserId = intent.extras?.getInt(KEY_LIMOR_USER_ID)
-        if (limorUserId == null) {
-            finish()
-            return
-        }
-
-        chatManager.chattingUserId = limorUserId
+        chatManager.chattingUserId = userId
 
         scope.launch {
-            getChat(limorUserId)
+            getChat(userId)
         }
     }
 
@@ -94,12 +113,16 @@ class ChatActivity : AppCompatActivity() {
 
     private fun observeChat(data: LiveData<ChatWithData>) {
         lifecycleScope.launch {
-            data.observe(this@ChatActivity) { onChatData(it) }
+            data.observe(this@ChatFragment) { onChatData(it) }
         }
     }
 
     private fun reportGenericError() {
-        Toast.makeText(this, getString(R.string.generic_chat_error_message), Toast.LENGTH_LONG)
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.generic_chat_error_message),
+            Toast.LENGTH_LONG
+        )
             .show()
     }
 
@@ -130,7 +153,9 @@ class ChatActivity : AppCompatActivity() {
         chatSession = chatData.sessionWithUser
 
         if (null == chatAdapter) {
-            chatAdapter = ChatAdapter(this, chatData)
+            chatAdapter = ChatAdapter(requireContext(), chatData, onCastClick = { id ->
+                onCastClick(id)
+            })
 
             binding.recyclerChat.adapter = chatAdapter
             scrollChatToBottom(false)
@@ -158,7 +183,7 @@ class ChatActivity : AppCompatActivity() {
     private fun playSound(chatData: ChatWithData) {
         chatData.messages.lastOrNull()?.let { message ->
             if (Int.MIN_VALUE != lastMessageId && message.id != lastMessageId) {
-                Sounds.playSound(this, SoundType.MESSAGE)
+                Sounds.playSound(requireContext(), SoundType.MESSAGE)
             }
             lastMessageId = message.id
         }
@@ -225,10 +250,9 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun setViews() {
-        val linearLayoutManager = object : LinearLayoutManager(baseContext, VERTICAL, false) {
+        val linearLayoutManager = object : LinearLayoutManager(requireContext(), VERTICAL, false) {
             override fun onLayoutCompleted(state: RecyclerView.State?) {
                 super.onLayoutCompleted(state)
-
             }
         }
         linearLayoutManager.stackFromEnd = true
@@ -243,7 +267,7 @@ class ChatActivity : AppCompatActivity() {
         }
 
         binding.buttonBack.setOnClickListener {
-            finish()
+            findNavController().navigateUp()
         }
 
         listenToEditTextChanges()
@@ -256,6 +280,31 @@ class ChatActivity : AppCompatActivity() {
 
             chat.addMyMessage(session, messageText)
         }
+    }
+
+    private fun onCastClick(id: Int) {
+        podcastViewModel.loadCast(id)
+        podcastViewModel.cast.observe(viewLifecycleOwner, { cast ->
+            if (cast.patronDetails?.purchased == false && cast.owner?.id != PrefsHandler.getCurrentUserId(
+                    requireContext()
+                )
+            ) {
+                val dialog = FragmentPodcastPopup.newInstance(cast.id)
+                dialog.show(parentFragmentManager, FragmentPodcastPopup.TAG)
+            } else {
+                openPlayer(cast)
+            }
+            podcastViewModel.cast.removeObservers(viewLifecycleOwner)
+        })
+    }
+
+    private fun openPlayer(cast: CastUIModel) {
+        (activity as? PlayerViewManager)?.showPlayer(
+            PlayerViewManager.PlayerArgs(
+                PlayerViewManager.PlayerType.EXTENDED,
+                cast.id
+            )
+        )
     }
 
     override fun onDestroy() {
@@ -273,10 +322,10 @@ class ChatActivity : AppCompatActivity() {
 
         const val draftDebounceTimeMillis = 500L
 
-        fun getStartIntent(context: Context, limorUserId: Int) =
+        /*fun getStartIntent(context: Context, limorUserId: Int) =
             Intent(context, ChatActivity::class.java).apply {
                 putExtra(KEY_LIMOR_USER_ID, limorUserId)
-            }
+        }*/
 
     }
 }

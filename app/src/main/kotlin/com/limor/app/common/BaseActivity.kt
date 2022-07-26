@@ -30,6 +30,7 @@ import com.limor.app.scenes.main.fragments.player.AudioPlayerActivity
 import com.limor.app.scenes.main.fragments.podcast.PodcastDetailsActivity
 import com.limor.app.scenes.main.fragments.profile.UserProfileActivity
 import com.limor.app.scenes.main_new.MainActivityNew
+import com.limor.app.scenes.main_new.fragments.FragmentPodcastPopup
 import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.main_new.view_model.MainActivityViewModel
 import com.limor.app.scenes.splash.SplashActivity
@@ -345,9 +346,8 @@ abstract class BaseActivity : AppCompatActivity() {
             if (cast.owner?.id == currentUserId) {
                 openCast(cast.id)
             } else if (cast.patronCast == true && cast.patronDetails?.purchased == false) {
-                cast.owner?.let {
-                    UserProfileActivity.show(this, it.username ?: "", it.id, 1)
-                }
+                val dialog = FragmentPodcastPopup.newInstance(cast.id)
+                dialog.show(supportFragmentManager, FragmentPodcastPopup.TAG)
             } else {
                 openCast(cast.id)
             }
