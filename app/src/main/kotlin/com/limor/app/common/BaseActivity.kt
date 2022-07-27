@@ -262,7 +262,7 @@ abstract class BaseActivity : AppCompatActivity() {
             if (BuildConfig.DEBUG) {
                 println("N.Payload ${result.toJSONObject()}")
             }
-            if(result.notification.additionalData.get("commentId").toString() != "null"){
+            if(result.notification.additionalData.has("commentId") && result.notification.additionalData.get("commentId").toString() != "null"){
                 val commentId = result.notification.additionalData.get("commentId").toString().toInt()
                 val childCommentId = if(result.notification.additionalData.get("childCommentId").toString() == "null") {
                     -1
