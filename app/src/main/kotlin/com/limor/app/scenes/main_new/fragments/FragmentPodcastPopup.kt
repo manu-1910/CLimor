@@ -34,6 +34,7 @@ import com.limor.app.scenes.main.viewmodels.LikePodcastViewModel
 import com.limor.app.scenes.main.viewmodels.PodcastViewModel
 import com.limor.app.scenes.main.viewmodels.RecastPodcastViewModel
 import com.limor.app.scenes.main_new.MainActivityNew
+import com.limor.app.scenes.main_new.fragments.comments.RootCommentsFragment
 import com.limor.app.scenes.main_new.fragments.comments.list.item.MySpannable
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.PlayerViewManager
@@ -53,11 +54,13 @@ class FragmentPodcastPopup : DialogFragment(), Injectable, DetailsAvailableListe
     companion object {
         val TAG = FragmentPodcastPopup::class.qualifiedName
         const val CAST_KEY = "CAST_KEY"
+        const val PARENT_COMMENT_ID_KEY = "PARENT_COMMENT_ID_KEY"
+        const val CHILD_COMMENT_ID_KEY = "CHILD_COMMENT_ID_KEY"
 
-        fun newInstance(castId: Int
+        fun newInstance(castId: Int, parentCommentId: Int = -1, childCommentId: Int = -1
         ): FragmentPodcastPopup {
             return FragmentPodcastPopup().apply {
-                arguments = bundleOf(CAST_KEY to castId)
+                arguments = bundleOf(CAST_KEY to castId, PARENT_COMMENT_ID_KEY to parentCommentId, CHILD_COMMENT_ID_KEY to childCommentId)
             }
         }
     }
@@ -74,6 +77,20 @@ class FragmentPodcastPopup : DialogFragment(), Injectable, DetailsAvailableListe
     private val podcastId: Int by lazy {
         requireArguments().getInt(
             FragmentPodcastPopup.CAST_KEY,
+            -1
+        )
+    }
+
+    private val parentCommentId: Int by lazy {
+        requireArguments().getInt(
+            FragmentPodcastPopup.PARENT_COMMENT_ID_KEY,
+            -1
+        )
+    }
+
+    private val childCommentId: Int by lazy {
+        requireArguments().getInt(
+            FragmentPodcastPopup.CHILD_COMMENT_ID_KEY,
             -1
         )
     }
@@ -433,8 +450,15 @@ class FragmentPodcastPopup : DialogFragment(), Injectable, DetailsAvailableListe
         playBillingHandler.launchBillingFlowFor(purchaseTarget, requireActivity()) { success ->
             if (success) {
                 lifecycleScope.launch {
-                    (activity as MainActivityNew).openExtendedPlayer(cast.id)
-                    dismiss()
+                    if(parentCommentId != -1){
+                        RootCommentsFragment.newInstance(cast, parentCommentId, childCommentId).also { fragment ->
+                            activity?.let { fragment.show(it.supportFragmentManager, fragment.requireTag()) }
+                        }
+                        dismiss()
+                    } else{
+                        (activity as MainActivityNew).openExtendedPlayer(cast.id)
+                        dismiss()
+                    }
                 }
             }
         }

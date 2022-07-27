@@ -328,8 +328,13 @@ abstract class BaseActivity : AppCompatActivity() {
     fun openCommentsSections(commentId: Int, childCommentId: Int, castId: Int){
         mainModel.loadCast(castId).observe(this){
             it?.let { it1 ->
-                RootCommentsFragment.newInstance(it1, commentId, childCommentId).also { fragment ->
-                    fragment.show(supportFragmentManager, fragment.requireTag())
+                if (it.patronCast == true && it.patronDetails?.purchased == false) {
+                    val dialog = FragmentPodcastPopup.newInstance(it.id, parentCommentId = commentId, childCommentId = childCommentId)
+                    dialog.show(supportFragmentManager, FragmentPodcastPopup.TAG)
+                } else{
+                    RootCommentsFragment.newInstance(it1, commentId, childCommentId).also { fragment ->
+                        fragment.show(supportFragmentManager, fragment.requireTag())
+                    }
                 }
             }
         }
