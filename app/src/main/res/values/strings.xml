@@ -4,7 +4,7 @@
     <string name="exception_message_generic">There was an error</string>
     <string name="image_content_description_default">image description</string>
     <string name="default_no_internet">Check your internet connection and try again.</string>
-    <string name="no_connection_title">No Connection</string>
+    <string name="no_connection_title">No Connection!</string>
     <string name="no_connection_description">Unfortunately, your internet connection has been lost. Please try again</string>
 
 
@@ -1081,8 +1081,7 @@
     <string name="cant_be_empty">Field can\'t be empty.</string>
     <string name="invalid_otp">Invalid otp</string>
 
-    <string name="oops">Oops!</string>
-    <string name="something_went_wrong_message">An error occurred while trying the operation. Please check your internet connection and try again after sometime.</string>
+    <string name="internet_connection_lost_message">Unfortunately, your internet connection has been lost. Please try again.</string>
 
     <string name="close_app">Close app</string>
 

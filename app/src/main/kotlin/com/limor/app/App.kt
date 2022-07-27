@@ -245,8 +245,8 @@ class App : Application(), HasActivityInjector, HasServiceInjector, LifecycleObs
             Handler(Looper.getMainLooper()).postDelayed(Runnable {
                 activity?.layoutInflater?.let {
                     LimorDialog(it).apply {
-                        setTitle(R.string.oops)
-                        setMessage(R.string.something_went_wrong_message)
+                        setTitle(R.string.no_connection_title)
+                        setMessage(R.string.internet_connection_lost_message)
                         setIcon(R.drawable.ic_alert)
                         addButton(R.string.close_app, activity !is RecordActivity) {
                             activity?.finishAndRemoveTask()
