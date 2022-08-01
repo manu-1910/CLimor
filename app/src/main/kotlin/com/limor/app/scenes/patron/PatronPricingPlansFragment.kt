@@ -123,7 +123,7 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
             println("Will handle purchahse: $purchase")
         }
 
-        model.consumePurchasedSub(purchase, currentCode).observe(viewLifecycleOwner) {
+        model.consumePurchasedSub(purchase, currentCode?.trim()).observe(viewLifecycleOwner) {
             if (BuildConfig.DEBUG) {
                 println("Successfully consumed purchase? -> $it, is on main -> ${Looper.getMainLooper().isCurrentThread}")
             }
@@ -260,7 +260,7 @@ class PatronPricingPlansFragment : Fragment(), PricingPlansAdapter.OnPlanClickLi
         currentCode = code
 
         if (code.isNotEmpty()) {
-            model.verifyPromoCode(code).observe(viewLifecycleOwner) { res ->
+            model.verifyPromoCode(code.trim()).observe(viewLifecycleOwner) { res ->
                 if (res.isDiscountCodeValid) {
                     applyDiscountedSubscription(res.priceId)
                 } else {
