@@ -312,11 +312,15 @@ class RecordFragment : BaseFragment() {
                             val tempFile = File(tempFilePath)
                             recordingFile.copyTo(tempFile, true)
                             mRecorder?.writeHeaders(tempFilePath)
-                            WavHelper.combineWaveFile(
-                                draftViewModel.filesArray[0].absolutePath,
-                                tempFile.absolutePath,
-                                copiedFile.absolutePath
-                            )
+                            if(draftViewModel.filesArray[0].absolutePath != fileRecording){
+                                WavHelper.combineWaveFile(
+                                    draftViewModel.filesArray[0].absolutePath,
+                                    tempFile.absolutePath,
+                                    copiedFile.absolutePath
+                                )
+                            } else{
+                                recordingFile.copyTo(copiedFile, true)
+                            }
                             amps = loadAmps(copiedFile.absolutePath, mRecorder?.bufferSize!!)
                             if (tempFile.exists()) tempFile.delete()
                             //It's a new recording
@@ -459,7 +463,11 @@ class RecordFragment : BaseFragment() {
             if (it.draftParent != null) {
 
                 uiDraft = draftViewModel.uiDraft
-
+                enablePlayButton(true)
+                fileRecording = uiDraft?.filePath!!
+                needToInitializeMediaPlayer = true
+                resetRecorderWithNewFile(false)
+                loadCurrentRecordingFileIntoWave()
 
                 // this means that we come from another fragment but we are not yet an autosave.
                 // we could come from draft list fragment, so we have to make an autosave from this
@@ -481,6 +489,8 @@ class RecordFragment : BaseFragment() {
                             val copiedFile = fileFromParent.copyTo(File(copiedFilePath), true)
                             if (copiedFile.exists()) {
                                 uiDraft?.filePath = copiedFilePath
+                                fileRecording = uiDraft?.filePath!!
+                                resetRecorderWithNewFile(false)
                                 draftViewModel.filesArray.clear()
                                 draftViewModel.filesArray.add(copiedFile)
                             } else {
@@ -504,6 +514,9 @@ class RecordFragment : BaseFragment() {
                 } else {
                     uiDraft = draftViewModel.uiDraft
                     needToInitializeMediaPlayer = true
+                    fileRecording = uiDraft?.filePath!!
+                    resetRecorderWithNewFile(false)
+                    loadCurrentRecordingFileIntoWave()
                     enablePlayButton(true)
                 }
             }
@@ -539,6 +552,23 @@ class RecordFragment : BaseFragment() {
             enablePlayButton(true)
         }
 
+    }
+
+    private fun loadCurrentRecordingFileIntoWave(){
+        if(!File(fileRecording).exists()) return
+        lifecycleScope.launch {
+            //Create dummy recorder to get wave parameters
+            val recorder = WaveRecorder("")
+            val amps: List<Int> =
+                loadAmps(fileRecording, recorder.bufferSize!!)
+            amps.forEach { amp ->
+                recordVisualizer?.addAmp(
+                    amp, recorder.tickDuration
+                )
+            }
+            needToInitializeMediaPlayer = true
+            enablePlayButton(true)
+        }
     }
 
     override fun onPause() {
@@ -1060,8 +1090,10 @@ class RecordFragment : BaseFragment() {
     }
 
 
-    private fun resetRecorderWithNewFile() {
-        fileRecording = getNewFileName()
+    private fun resetRecorderWithNewFile(resetToNewFile: Boolean = true) {
+        if(resetToNewFile){
+            fileRecording = getNewFileName()
+        }
         mRecorder = WaveRecorder(fileRecording)
         mRecorder?.waveConfig?.sampleRate = 44100
         mRecorder?.waveConfig?.channels = AudioFormat.CHANNEL_IN_STEREO
