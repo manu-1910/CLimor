@@ -1048,7 +1048,7 @@
     <string name="enter_promo_code">Enter Promo Code here</string>
     <string name="title_invalid_code">Invalid Code</string>
     <string name="message_enter_valid_code">Please enter a valid code.</string>
-    <string name="cancel_subscription_text">You can cancel the subscription anytime</string>
+    <string name="cancel_subscription_text">*You can cancel the subscription anytime</string>
 
     <string name="yearly_patron_carousel_slide_1_sub_title">Monetize casts, access to webapp and share clickable links.</string>
     <string name="yearly_patron_carousel_slide_2_sub_title">Exclusive access to online events, live events, networking events and upskilling.</string>
