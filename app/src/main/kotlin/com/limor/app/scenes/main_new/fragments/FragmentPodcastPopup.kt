@@ -10,6 +10,7 @@ import android.text.*
 import android.text.method.LinkMovementMethod
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -451,10 +452,28 @@ class FragmentPodcastPopup : DialogFragment(), Injectable, DetailsAvailableListe
             if (success) {
                 lifecycleScope.launch {
                     if(parentCommentId != -1){
-                        RootCommentsFragment.newInstance(cast, parentCommentId, childCommentId).also { fragment ->
-                            activity?.let { fragment.show(it.supportFragmentManager, fragment.requireTag()) }
+                        if (requireActivity() is PlayerViewManager){
+                            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                                if(!(requireActivity() as PlayerViewManager).isPlayerVisible()){
+                                    (requireActivity() as PlayerViewManager).showPlayer(PlayerViewManager.PlayerArgs(
+                                        PlayerViewManager.PlayerType.EXTENDED,
+                                        cast.id
+                                    ))
+                                }
+                                Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                                    RootCommentsFragment.newInstance(cast, parentCommentId, childCommentId).also { fragment ->
+                                        activity?.let { fragment.show(it.supportFragmentManager, fragment.requireTag()) }
+                                    }
+                                    dismiss()
+                                },1500)
+                            }, 200)
+                            this@FragmentPodcastPopup.dialog?.hide()
+                        } else{
+                            RootCommentsFragment.newInstance(cast, parentCommentId, childCommentId).also { fragment ->
+                                activity?.let { fragment.show(it.supportFragmentManager, fragment.requireTag()) }
+                            }
+                            dismiss()
                         }
-                        dismiss()
                     } else{
                         (activity as MainActivityNew).openExtendedPlayer(cast.id)
                         dismiss()

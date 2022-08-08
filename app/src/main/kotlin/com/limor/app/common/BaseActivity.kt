@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.activity.viewModels
@@ -41,6 +42,7 @@ import com.limor.app.service.PlayerStatus
 import com.limor.app.uimodels.CastUIModel
 import com.onesignal.OneSignal
 import dagger.android.AndroidInjection
+import io.square1.limor.remote.services.user.LOG_OUT_PATH
 import kotlinx.android.synthetic.main.mini_player_view.*
 import kotlinx.android.synthetic.main.mini_player_view.view.*
 import org.greenrobot.eventbus.EventBus
@@ -213,7 +215,7 @@ abstract class BaseActivity : AppCompatActivity() {
             }
         }
 
-        if(this::class in setOf(SplashActivity::class, MainActivityNew::class)){
+        if(this::class in setOf(SplashActivity::class, MainActivityNew::class, UserProfileActivity::class)){
             checkPendingOnSignalNotifications()
             setOneSignalNotificationHandler()
             checkDynamicLink()
@@ -233,8 +235,23 @@ abstract class BaseActivity : AppCompatActivity() {
             PrefsHandler.setCommentCastId(this, -1)
             mainModel.loadCast(castId).observe(this){
                 it?.let { it1 ->
-                    RootCommentsFragment.newInstance(it1, commentId, childCommentId).also { fragment ->
-                        fragment.show(supportFragmentManager, fragment.requireTag())
+                    if(this is PlayerViewManager){
+                        if((this as PlayerViewManager).isPlayerVisible() == false){
+                            (this as PlayerViewManager).showPlayer(PlayerViewManager.PlayerArgs(
+                                PlayerViewManager.PlayerType.EXTENDED,
+                                castId
+                            ))
+                        }
+                        Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                            RootCommentsFragment.newInstance(it1, commentId, childCommentId).also { fragment ->
+                                fragment.show(supportFragmentManager, fragment.requireTag())
+                            }
+                        },1500)
+                    }
+                    else{
+                        RootCommentsFragment.newInstance(it1, commentId, childCommentId).also { fragment ->
+                            fragment.show(supportFragmentManager, fragment.requireTag())
+                        }
                     }
                 }
             }
@@ -332,8 +349,22 @@ abstract class BaseActivity : AppCompatActivity() {
                     val dialog = FragmentPodcastPopup.newInstance(it.id, parentCommentId = commentId, childCommentId = childCommentId)
                     dialog.show(supportFragmentManager, FragmentPodcastPopup.TAG)
                 } else{
-                    RootCommentsFragment.newInstance(it1, commentId, childCommentId).also { fragment ->
-                        fragment.show(supportFragmentManager, fragment.requireTag())
+                    if (this is PlayerViewManager){
+                        if((this as PlayerViewManager).isPlayerVisible() == false){
+                            (this as PlayerViewManager).showPlayer(PlayerViewManager.PlayerArgs(
+                                PlayerViewManager.PlayerType.EXTENDED,
+                                castId
+                            ))
+                        }
+                        Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                            RootCommentsFragment.newInstance(it1, commentId, childCommentId).also { fragment ->
+                                fragment.show(supportFragmentManager, fragment.requireTag())
+                            }
+                        },2000)
+                    } else{
+                        RootCommentsFragment.newInstance(it1, commentId, childCommentId).also { fragment ->
+                            fragment.show(supportFragmentManager, fragment.requireTag())
+                        }
                     }
                 }
             }
