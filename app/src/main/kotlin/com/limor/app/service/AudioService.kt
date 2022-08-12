@@ -146,6 +146,10 @@ class AudioService : Service() {
         return exoPlayer.duration
     }
 
+    fun setPlayerReady(){
+        exoPlayer.playWhenReady = true
+    }
+
     fun forward(skipLength: Long = PLAYBACK_SKIP_INCREMENTS) {
         if (exoPlayer.currentPosition + skipLength < exoPlayer.duration) {
             exoPlayer.seekTo(exoPlayer.currentPosition + skipLength)
@@ -362,6 +366,14 @@ class AudioService : Service() {
     data class AudioTrack(
         val url: String,
         val title: String?,
-        val duration: Duration
-    ) : Parcelable
+        val duration: Duration,
+        var startPlayingFrom: Long = -1
+    ) : Parcelable{
+        override fun equals(other: Any?) = Audio(this) == Audio(other as AudioTrack)
+    }
+
+    data class Audio(val url: String){
+        constructor(track: AudioTrack) : this(track.url)
+    }
+
 }

@@ -64,6 +64,8 @@ class SmallPlayerFragment : BaseFragment(), PlayerFragment {
 
     private var currentCast: CastUIModel? = null
 
+    private var currentPlayingPosition = 0
+
     @Inject
     lateinit var playerBinder: PlayerBinder
 
@@ -182,7 +184,7 @@ class SmallPlayerFragment : BaseFragment(), PlayerFragment {
                             R.string.progress,
                             duration.toReadableStringFormat(DURATION_READABLE_FORMAT_3)
                         )
-
+                        currentPlayingPosition = duration.toMillis().toInt()
                     }
                 }
                 .launchIn(this)
@@ -243,7 +245,8 @@ class SmallPlayerFragment : BaseFragment(), PlayerFragment {
                 castIds = castIds,
                 playerType = PlayerViewManager.PlayerType.EXTENDED,
                 maximizedFromMiniPlayer = true,
-                restarted = restarted
+                restarted = restarted,
+                playFrom = currentPlayingPosition
             )
         )
     }

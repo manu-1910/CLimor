@@ -151,7 +151,8 @@ class ActivityPlayerViewManager(
                 args.castId,
                 args.castIds,
                 !args.maximizedFromMiniPlayer,
-                args.restarted
+                args.restarted,
+                args.playFrom
             )
         }
     }

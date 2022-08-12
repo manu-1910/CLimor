@@ -3,6 +3,8 @@ package com.limor.app.scenes.main_new.fragments
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,6 +36,7 @@ import com.limor.app.scenes.main_new.fragments.comments.UserMentionFragment
 import com.limor.app.scenes.main_new.view_model.ListenPodcastViewModel
 import com.limor.app.scenes.main_new.view_model.PodcastInteractionViewModel
 import com.limor.app.scenes.utils.*
+import com.limor.app.service.AudioService
 import com.limor.app.service.PlayerBinder
 import com.limor.app.service.PlayerStatus
 import com.limor.app.uimodels.*
@@ -60,18 +63,21 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         private const val KEY_CAST_IDS = "KEY_CAST_IDS"
         private const val AUTO_PLAY_KEY = "AUTO_PLAY_KEY"
         private const val RESTARTED = "RESTARTED"
+        private const val START_PLAYING_FROM = "START_PLAYING_FROM"
         fun newInstance(
             castId: Int,
             castIds: List<Int>?,
             autoPlay: Boolean = false,
             restarted: Boolean = false,
+            startPlayingFrom: Int = 0
         ): ExtendedPlayerFragment {
             return ExtendedPlayerFragment().apply {
                 arguments = bundleOf(
                     CAST_ID_KEY to castId,
                     KEY_CAST_IDS to castIds?.toIntArray(),
                     AUTO_PLAY_KEY to autoPlay,
-                    RESTARTED to restarted
+                    RESTARTED to restarted,
+                    START_PLAYING_FROM to startPlayingFrom
                 )
             }
         }
@@ -105,6 +111,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
     private var sharedPodcastId = -1
 
     private var currentCast: CastUIModel? = null
+    private var currentPlayingPosition: Int = 0
 
     @Inject
     lateinit var playerBinder: PlayerBinder
@@ -117,6 +124,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         super.onCreate(savedInstanceState)
 
         castId = requireArguments()[CAST_ID_KEY] as Int
+        currentPlayingPosition = requireArguments()[START_PLAYING_FROM] as Int
 
         requireActivity().onBackPressedDispatcher.addCallback(owner = this) {
             podcastInteractionViewModel.reload.postValue(true)
@@ -451,6 +459,7 @@ class ExtendedPlayerFragment : UserMentionFragment(),
 
     private fun handlePlayPosition(position: Duration) {
         binding.lpiPodcastProgress.progress = position.seconds.toInt()
+        currentPlayingPosition = position.toMillis().toInt()
         // ((duration.seconds * 100) / audioModel.duration.seconds).toInt()
         binding.tvRecastPlayCurrentPosition.text =
             position.toReadableStringFormat(DURATION_READABLE_FORMAT_3)
@@ -517,13 +526,21 @@ class ExtendedPlayerFragment : UserMentionFragment(),
         }
 
         binding.btnPodcastPlayExtended.setOnClickListener {
-            cast.audio?.let { audio ->
-                if (playerBinder.audioTrackIsInInitState(cast.audio.mapToAudioTrack())) {
-                    listenPodcastViewModel.listenPodcast(castId)
-                    isStartedPlayingInThisObject = true
-                }
-                playerBinder.playPause(audio.mapToAudioTrack(), showNotification = true)
+            val track : AudioService.AudioTrack? = cast.audio?.mapToAudioTrack()
+            track?.startPlayingFrom = currentPlayingPosition.toLong()
+            track?.let {
+                playerBinder.endOtherAudioTrackToPlayNewOne(it)
             }
+            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                track?.let { audio ->
+                    if (playerBinder.audioTrackIsInInitState(audio)) {
+                        listenPodcastViewModel.listenPodcast(castId)
+                        isStartedPlayingInThisObject = true
+                    }
+
+                    playerBinder.playPause(track, showNotification = true)
+                }
+            }, 500)
         }
 
         binding.btnPodcastRewindBack.setOnClickListener {

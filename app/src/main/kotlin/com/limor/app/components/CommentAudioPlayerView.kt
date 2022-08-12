@@ -2,7 +2,10 @@ package com.limor.app.components
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.SeekBar
@@ -15,6 +18,7 @@ import com.limor.app.service.PlayerStatus
 import com.limor.app.uimodels.AudioCommentUIModel
 import com.limor.app.uimodels.mapToAudioTrack
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -31,7 +35,7 @@ class  CommentAudioPlayerView(context: Context, attrs: AttributeSet) : FrameLayo
 
     var playListener: (() -> Unit)? = null
 
-    private var currentPosition: Duration = Duration.ZERO;
+    private var currentPosition: Duration = Duration.ZERO
 
     init {
         binding.progressSeekbar.apply {
@@ -52,13 +56,21 @@ class  CommentAudioPlayerView(context: Context, attrs: AttributeSet) : FrameLayo
             })
         }
         binding.playButton.setOnClickListener {
-            if (currentPosition.toMillis() == 0L) {
-                playListener?.invoke()
+            commentAudioTrack?.let {
+                playerBinder.endOtherAudioTrackToPlayNewOne(it)
             }
-            playerBinder.setIsPlayingComment(true)
-            playerBinder.playPause(
-                commentAudioTrack!!,
-                showNotification = false
+            Handler(Looper.getMainLooper()).postDelayed(
+                Runnable {
+                    if (currentPosition.toMillis() == 0L) {
+                        playListener?.invoke()
+                    }
+                    playerBinder.setIsPlayingComment(true)
+                    commentAudioTrack?.startPlayingFrom = currentPosition.toMillis()
+                    playerBinder.playPause(
+                        commentAudioTrack!!,
+                        showNotification = false
+                    )
+                }, 500
             )
         }
     }

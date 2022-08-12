@@ -3,7 +3,10 @@ package com.limor.app.service
 import android.content.ComponentName
 import android.content.Context
 import android.content.ServiceConnection
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
+import androidx.lifecycle.MutableLiveData
 import com.limor.app.BuildConfig
 import com.limor.app.common.dispatchers.DispatcherProvider
 import kotlinx.coroutines.CoroutineScope
@@ -136,6 +139,12 @@ class PlayerBinder @Inject constructor(
         audioService?.pause()
     }
 
+    fun endOtherAudioTrackToPlayNewOne(audioTrack: AudioService.AudioTrack){
+        if(currentAudioTrack != audioTrack){
+            playerStatus.value = PlayerStatus.Ended
+        }
+    }
+
     private fun internalPlayPause(audioTrack: AudioService.AudioTrack, showNotification: Boolean, startPosition: Int = 0, endPosition: Int = 0) {
         val audioService = audioService ?: return
 
@@ -149,7 +158,7 @@ class PlayerBinder @Inject constructor(
             audioService.play(
                 audioTrack,
                 withNotification = showNotification,
-                startPosition = startPosition.toLong()
+                startPosition = if(audioTrack.startPlayingFrom != -1L) audioTrack.startPlayingFrom else startPosition.toLong()
             )
         } else {
             if (BuildConfig.DEBUG) {
@@ -176,7 +185,12 @@ class PlayerBinder @Inject constructor(
                         audioService.seekTo(startPosition)
                     }
 
-                    audioService.resume()
+                    if(audioTrack.startPlayingFrom != -1L){
+                        audioService.setPlayerReady()
+                        audioService.seekTo(audioTrack.startPlayingFrom.toInt())
+                    } else{
+                        audioService.resume()
+                    }
                 }
                 else -> {
                     audioService.play(

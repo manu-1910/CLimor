@@ -18,7 +18,8 @@ interface PlayerViewManager {
         val castId: Int,
         val castIds: List<Int>? = null,
         val maximizedFromMiniPlayer: Boolean = false,
-        val restarted: Boolean = false
+        val restarted: Boolean = false,
+        val playFrom: Int = 0
     )
 
     enum class PlayerType {
