@@ -34,7 +34,7 @@ class ApolloImpl(val client: ApolloClient) : Apollo {
             val errorMessage = response.errors!!.joinToString("\n") { it.message }
             val errorWithQueryPrefix =
                 if (getMutationSpecificError(queryName, errorMessage).isNotEmpty()) getMutationSpecificError(
-                    queryName
+                    queryName, errorMessage
                 ) else StringBuilder(queryName).append("-> ").append(errorMessage)
             val apiException = GraphqlClientException(errorWithQueryPrefix.toString())
             Timber.e(apiException)
@@ -57,7 +57,12 @@ fun getMutationSpecificError(queryName: String, errorMessage: String = ""): Stri
         "ValidateUserOtpMutation",
         "ValidateUserOtpForSignUpMutation",
         "SendOtpToPhoneNumberMutation",
-        "SendOtpForSignUpMutation" -> errorMessage
+        "SendOtpForSignUpMutation",
+        "ValidateOtpToDeleteUserMutation",
+        "SendOtpToDeleteUserMutation" -> if(errorMessage == "Too Many Requests, Please try after some time.") {
+            "Something went wrong! Please try after sometime."
+        }
+        else errorMessage
         else -> ""
     }
 }

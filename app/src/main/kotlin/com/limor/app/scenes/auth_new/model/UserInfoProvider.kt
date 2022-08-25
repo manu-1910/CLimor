@@ -66,8 +66,8 @@ class UserInfoProvider @Inject constructor(
     val userExists: LiveData<Boolean?>
         get() = _userExistsLiveData
 
-    private val _otpSent = MutableLiveData<Boolean?>().apply { value = null }
-    val otpSent: LiveData<Boolean?>
+    private val _otpSent = MutableLiveData<String?>().apply { value = null }
+    val otpSent: LiveData<String?>
         get() = _otpSent
 
     private val _otpValidWithToken = MutableLiveData<String?>().apply { value = null }
@@ -209,7 +209,7 @@ class UserInfoProvider @Inject constructor(
     fun sendOtpToPhoneNumber(scope: CoroutineScope, phoneNumber: String, isSignInCase: Boolean, resend: Boolean = false){
         scope.launch {
             if (phoneNumber.isEmpty()) {
-                _otpSent.postValue(false)
+                _otpSent.postValue("Invalid phone number")
                 delay(500)
                 _otpSent.postValue(null)
             }
@@ -218,12 +218,12 @@ class UserInfoProvider @Inject constructor(
                 if (BuildConfig.DEBUG) {
                     println("Sending otp to $phoneNumber -> $response")
                 }
-                _otpSent.postValue(response?.trim()?.lowercase().equals("success"))
+                _otpSent.postValue(response ?: "")
                 delay(500)
                 _otpSent.postValue(null)
             } catch (exception: Exception) {
                 exception.printStackTrace()
-                _otpSent.postValue(false)
+                _otpSent.postValue(exception.localizedMessage)
                 delay(500)
                 _otpSent.postValue(null)
             }

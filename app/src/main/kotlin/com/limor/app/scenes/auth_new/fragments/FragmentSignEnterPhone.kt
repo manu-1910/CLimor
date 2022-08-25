@@ -18,6 +18,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.limor.app.R
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.scenes.auth_new.AuthActivityNew
@@ -74,6 +75,7 @@ class FragmentSignEnterPhone : Fragment() {
 
     private fun setClickListeners() {
         btnContinue.setOnClickListener {
+            btnContinue.isEnabled = false
             model.checkPhoneNumberExistence()
         }
         btnBack.setOnClickListener {
@@ -136,7 +138,7 @@ class FragmentSignEnterPhone : Fragment() {
         model.otpSent.observe(viewLifecycleOwner, Observer {
             if(it == null)
                 return@Observer
-            if(it){
+            if(it.toString().lowercase() == "success"){
                 Toast.makeText(activity, "Code has been sent", Toast.LENGTH_LONG)
                     .show()
                 Handler(Looper.getMainLooper()).postDelayed(Runnable {
@@ -144,10 +146,16 @@ class FragmentSignEnterPhone : Fragment() {
                         .navigate(R.id.action_fragment_new_auth_phone_enter_to_fragment_new_auth_phone_code)
                 }, 2000)
             } else{
-                Toast.makeText(context, "Error sending otp. Please try after some time.", Toast.LENGTH_SHORT)
-                    .show()
+                btnContinue.isEnabled = false
+                showErrorInSnackBar(it)
             }
         })
+    }
+
+    private fun showErrorInSnackBar(errorMessage: String){
+        Snackbar.make(clMain, if(errorMessage.trim() == "") "Something went wrong! Please try after sometime." else errorMessage, Snackbar.LENGTH_SHORT)
+            .setTextColor(resources.getColor(android.R.color.white))
+            .show()
     }
 
     private fun setCountry(countries: List<Country>) {

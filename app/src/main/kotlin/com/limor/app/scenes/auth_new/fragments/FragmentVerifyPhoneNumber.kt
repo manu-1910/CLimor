@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.limor.app.R
 import com.limor.app.extensions.hideKeyboard
@@ -203,13 +204,12 @@ class FragmentVerifyPhoneNumber : Fragment() {
         model.otpSent.observe(viewLifecycleOwner, Observer {
             if(it == null)
                 return@Observer
-            if(it){
+            if(it.toString().lowercase() == "success"){
                 Toast.makeText(activity, "Code has been sent", Toast.LENGTH_LONG)
                     .show()
                 model.enableResend()
             } else{
-                Toast.makeText(context, "Error sending otp. Please try after some time.", Toast.LENGTH_SHORT)
-                    .show()
+                showErrorInSnackBar(it)
             }
         })
 
@@ -237,8 +237,6 @@ class FragmentVerifyPhoneNumber : Fragment() {
 
         model.otpInValid.observe(viewLifecycleOwner, Observer {
             if(it == null) return@Observer
-            tvWrongCode.visibility = View.VISIBLE
-            tvWrongCode.text = getString(R.string.invalid_otp)
             fabResendCode.isEnabled = true
             model.cancelTimers()
             smsCodeEtList.forEach { et ->
@@ -250,9 +248,16 @@ class FragmentVerifyPhoneNumber : Fragment() {
             }
 
             // re-enable the button as the user might want to enter a new OTP
-            btnContinue.isEnabled = true
+            btnContinue.isEnabled = false
+            showErrorInSnackBar(it)
         })
 
+    }
+
+    private fun showErrorInSnackBar(errorMessage: String){
+        Snackbar.make(clMain, if(errorMessage.trim() == "") "Something went wrong! Please try after sometime." else errorMessage, Snackbar.LENGTH_SHORT)
+            .setTextColor(resources.getColor(android.R.color.white))
+            .show()
     }
 
     private fun showError(messageResId: Int) {

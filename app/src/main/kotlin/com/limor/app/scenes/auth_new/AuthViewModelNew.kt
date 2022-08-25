@@ -85,7 +85,7 @@ class AuthViewModelNew @Inject constructor(
         userInfoProvider.sendOtpToPhoneNumber(viewModelScope, formattedPhone, signInCase)
     }
 
-    val otpSent:LiveData<Boolean?>
+    val otpSent:LiveData<String?>
         get() = userInfoProvider.otpSent.apply { null }
 
     fun sendOtp(){
