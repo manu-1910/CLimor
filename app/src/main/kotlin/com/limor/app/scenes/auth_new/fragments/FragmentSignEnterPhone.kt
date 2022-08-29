@@ -34,8 +34,10 @@ import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.etEnterPhone
 import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.etEnterPhoneInner
 import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.etPhoneCode
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.*
+import kotlinx.android.synthetic.main.fragment_verify_otp_for_account_deletion.*
 import timber.log.Timber
 import java.lang.ref.WeakReference
+import java.util.*
 
 
 class FragmentSignEnterPhone : Fragment() {
@@ -114,7 +116,8 @@ class FragmentSignEnterPhone : Fragment() {
         })
         model.phoneNumberExistsLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
-            if (it == true) {
+            if (it.isFound == true) {
+                btnContinue.isEnabled = false
                 val description = resources.getString(R.string.sign_in_with_phone_number)
                 val content = SpannableString(description)
                 content.setSpan(ForegroundColorSpan(resources.getColor(R.color.colorAccent)), 23, description.length, 0)

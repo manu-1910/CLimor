@@ -2,5 +2,6 @@ query GetUserByPhoneNumberQuery($phoneNumber: String!){
     getUserByPhoneNumber(phoneNumber: $phoneNumber){
         status
         isFound
+        isDeleted
     }
 }

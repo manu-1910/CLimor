@@ -43,10 +43,12 @@ import com.limor.app.extensions.dp
 import com.limor.app.extensions.hideKeyboard
 import com.limor.app.extensions.px
 import com.limor.app.scenes.auth_new.firebase.FirebaseSessionHandler
+import com.limor.app.scenes.auth_new.fragments.FragmentLanguages
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.main.fragments.settings.EditProfileFragment.Companion.TIMBER_TAG
 import com.limor.app.scenes.main.viewmodels.LogoutViewModel
 import com.limor.app.scenes.main.viewmodels.UpdateUserViewModel
+import com.limor.app.scenes.main_new.fragments.FragmentDeleteAccountPhoneNumberInput
 import com.limor.app.scenes.splash.SplashActivity
 import com.limor.app.scenes.utils.CommonsKt
 import com.limor.app.scenes.utils.CommonsKt.Companion.handleOnApiError
@@ -202,6 +204,10 @@ class SettingsFragment : BaseFragment() {
             showLogoutWarning()
         }
 
+        lytDeleteAccount.onClick {
+            showDeleteAccountWarning()
+        }
+
     }
 
     private fun logout() {
@@ -279,6 +285,10 @@ class SettingsFragment : BaseFragment() {
             window?.setBackgroundDrawable(inset)
             show()
         }
+    }
+
+    private fun showDeleteAccountWarning(){
+        findNavController().navigate(R.id.action_fragment_settings_to_fragment_delete_account)
     }
 
 

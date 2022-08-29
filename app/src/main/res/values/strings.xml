@@ -220,7 +220,7 @@
     <string name="title_age">Age</string>
     <string name="title_gender">Gender</string>
     <string name="logout">Logout</string>
-
+    <string name="delete_account">Delete Account</string>
 
     <!-- Categories and Locations fragment -->
     <string name="search">Search…</string>
@@ -1068,12 +1068,12 @@
     <string name="patron">Patron</string>
     <string name="patron_pro">Patron Pro</string>
     <string name="converting_audio">Converting audio...</string>
-    
+
     <string name="age_restriction_title">Age Restriction</string>
     <string name="patron_request_age_restrinction_message">Users must be at least 18 years to become Patron members</string>
     <string name="about_you">About you</string>
     <string name="tell_us_about_you_description">Tell us about you so that people can find you easily</string>
-    
+
     <string name="mandatory_first_name">First Name*</string>
     <string name="mandatory_last_name">Last Name*</string>
     <string name="mandatory_email">Email*</string>
@@ -1087,5 +1087,18 @@
 
     <string name="item_purchased_title">Error</string>
     <string name="item_purchased_description">You already own a subscription</string>
-    
+    <string name="delete_your_limor_account">Delete your Limor account</string>
+    <string name="delete_your_account">Delete your Account?</string>
+    <string name="deleting_your_account_is_permanent">Deleting your account is permanent</string>
+    <string name="delete_account_date_description">Your account information along with all interactions will be permanentely deleted. This includes your podcasts, profile and cast photos, comments etc.</string>
+    <string name="delete_subscriptions_title">In-app Purchases</string>
+    <string name="delete_subscriptions_description">Your In-app purhcases, active subscriptions will be permanently deleted. Visit Subscriptions.</string>
+    <string name="subscription_title">Subscriptions</string>
+    <string name="subscription_description">Make sure to cancel any active subscription that you may have on your account. Else you may be charged even after deleting your account.</string>
+    <string name="otp_sent_to_your_number">Enter the OTP sent to your number</string>
+    <string name="didn_t_get_the_code_resend_it">Didn\'t get the code? Resend it</string>
+
+    <string name="reactivate_account">Reactivate Account</string>
+    <string name="reactivate_message">This number already has an account which is deleted. Would you like to reactivate your account?</string>
+
 </resources>

@@ -321,6 +321,30 @@
                 android:layout_alignParentStart="true" />
 
             <RelativeLayout
+                android:id="@+id/lytDeleteAccount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:paddingStart="@dimen/marginMedium"
+                android:paddingEnd="@dimen/marginMedium"
+                android:clickable="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/tvDelete"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:fontFamily="@font/roboto_medium"
+                    android:text="@string/delete_account"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/textSize16" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/lytLogout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -336,11 +360,11 @@
                     android:id="@+id/tvLogout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/textSize16"
+                    android:layout_alignParentStart="true"
                     android:fontFamily="@font/roboto_medium"
                     android:text="@string/logout"
-                    android:layout_alignParentStart="true" />
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/textSize16" />
 
             </RelativeLayout>
 

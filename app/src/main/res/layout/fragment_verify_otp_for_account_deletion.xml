@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/parentLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/verifyLayout"
+        android:fillViewport="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/margin24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:clipToPadding="false"
+        tools:context=".scenes.main_new.fragments.FragmentVerifyOtpForAccountDeletion">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/deleteIcon"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:src="@drawable/multiply_circle"
+                android:foregroundTint="@color/white"
+                android:layout_marginTop="@dimen/margin24"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/deleteYourAccountTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/delete_your_account"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_marginTop="@dimen/margin18"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/deleteIcon"/>
+
+            <TextView
+                android:id="@+id/deleteReminderTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Here are few things to note"
+                app:layout_constraintTop_toBottomOf="@id/deleteYourAccountTV"
+                android:textColor="@color/black"
+                android:textAlignment="center"
+                android:layout_marginTop="@dimen/margin18"
+                android:paddingStart="@dimen/margin24"
+                android:paddingEnd="@dimen/margin24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <ImageView
+                android:id="@+id/deleteAccountIV"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="@dimen/margin18"
+                android:layout_marginStart="@dimen/margin18"
+                android:src="@drawable/ic_danger"
+                android:background="@color/white"
+                app:layout_constraintTop_toBottomOf="@id/deleteReminderTV"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <TextView
+                android:id="@+id/permanentTitleTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/deleting_your_account_is_permanent"
+                android:layout_marginStart="@dimen/fab_margin"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="@id/deleteAccountIV"
+                app:layout_constraintStart_toEndOf="@id/deleteAccountIV"
+                app:layout_constraintTop_toBottomOf="@id/deleteReminderTV"/>
+
+            <TextView
+                android:id="@+id/permanentDescriptionTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/delete_account_date_description"
+                android:layout_marginStart="@dimen/fab_margin"
+                android:layout_marginEnd="@dimen/margin18"
+                android:textColor="@color/ef_grey"
+                android:layout_marginTop="@dimen/marginTiny"
+                app:layout_constraintStart_toEndOf="@id/deleteAccountIV"
+                app:layout_constraintTop_toBottomOf="@id/permanentTitleTV"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <ImageView
+                android:id="@+id/subsIV"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="@dimen/margin18"
+                android:layout_marginStart="@dimen/margin18"
+                android:src="@drawable/ic_dollar_sign"
+                android:background="@color/white"
+                app:layout_constraintTop_toBottomOf="@id/permanentDescriptionTV"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <TextView
+                android:id="@+id/subsTitleTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/delete_subscriptions_title"
+                android:layout_marginStart="@dimen/fab_margin"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="@id/subsIV"
+                app:layout_constraintStart_toEndOf="@id/subsIV"
+                app:layout_constraintTop_toBottomOf="@id/permanentDescriptionTV"/>
+
+            <TextView
+                android:id="@+id/subsDescriptionTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/delete_subscriptions_description"
+                android:layout_marginStart="@dimen/fab_margin"
+                android:layout_marginEnd="@dimen/margin18"
+                android:textColor="@color/ef_grey"
+                android:layout_marginTop="@dimen/marginTiny"
+                app:layout_constraintStart_toEndOf="@id/deleteAccountIV"
+                app:layout_constraintTop_toBottomOf="@id/subsTitleTV"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <ImageView
+                android:id="@+id/subscriptionsIV"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="@dimen/margin18"
+                android:layout_marginStart="@dimen/margin18"
+                android:src="@drawable/ic_subs"
+                android:background="@color/white"
+                app:layout_constraintTop_toBottomOf="@id/subsDescriptionTV"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+            <TextView
+                android:id="@+id/subscriptionsTitleTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/subscription_title"
+                android:layout_marginStart="@dimen/fab_margin"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="@id/subscriptionsIV"
+                app:layout_constraintStart_toEndOf="@id/subscriptionsIV"
+                app:layout_constraintTop_toBottomOf="@id/permanentDescriptionTV"/>
+
+            <TextView
+                android:id="@+id/restoreAccountDescriptionTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/subscription_description"
+                android:layout_marginStart="@dimen/fab_margin"
+                android:layout_marginEnd="@dimen/margin18"
+                android:textColor="@color/ef_grey"
+                android:layout_marginTop="@dimen/marginTiny"
+                app:layout_constraintStart_toEndOf="@id/subscriptionsIV"
+                app:layout_constraintTop_toBottomOf="@id/subscriptionsTitleTV"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <TextView
+                android:id="@+id/enterOtpTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/otp_sent_to_your_number"
+                android:layout_marginTop="@dimen/margin48"
+                android:textSize="16sp"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/restoreAccountDescriptionTV"/>
+
+            <TextView
+                android:id="@+id/phoneNumberTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:layout_marginTop="@dimen/marginTiny"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/enterOtpTitle"
+                tools:text="+91-98*****789"/>
+
+            <View
+                android:id="@+id/view3"
+                android:layout_width="0dp"
+                android:layout_height="190dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bordered_rectangle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/phoneNumberTV" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnContinue"
+                style="@android:style/Widget.Material.Button.Borderless.Colored"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="@dimen/margin48"
+                android:layout_marginEnd="@dimen/margin48"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="12dp"
+                android:enabled="false"
+                android:text="@string/delete_account"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:background="@color/bg_grey"
+                app:layout_constraintTop_toBottomOf="@+id/etSms4"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/resendTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/didn_t_get_the_code_resend_it"
+                android:textColor="@color/blue500"
+                android:layout_marginBottom="12dp"
+                app:layout_constraintStart_toStartOf="@id/view3"
+                app:layout_constraintEnd_toEndOf="@id/view3"
+                app:layout_constraintTop_toBottomOf="@id/btnContinue"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/etSms1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toStartOf="@+id/etSms2"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="@id/view3"
+                app:layout_constraintTop_toTopOf="@+id/view3">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:maxLines="1"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="0dp"
+                    android:singleLine="true"
+                    android:textSize="16sp"
+                    tools:text="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/etSms2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toStartOf="@+id/etSms3"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/etSms1"
+                app:layout_constraintTop_toTopOf="@+id/view3">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:maxLines="1"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="0dp"
+                    android:singleLine="true"
+                    android:textSize="16sp"
+                    tools:text="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/etSms3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toStartOf="@+id/etSms4"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/etSms2"
+                app:layout_constraintTop_toTopOf="@+id/view3">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:maxLines="1"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="0dp"
+                    android:singleLine="true"
+                    android:textSize="16sp"
+                    tools:text="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/etSms4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toStartOf="@+id/etSms5"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/etSms3"
+                app:layout_constraintTop_toTopOf="@+id/view3">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:maxLines="1"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="0dp"
+                    android:singleLine="true"
+                    android:textSize="16sp"
+                    tools:text="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/etSms5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toStartOf="@+id/etSms6"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/etSms4"
+                app:layout_constraintTop_toTopOf="@+id/view3">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:maxLines="1"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="0dp"
+                    android:singleLine="true"
+                    android:textSize="16sp"
+                    tools:text="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/etSms6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toEndOf="@id/view3"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/etSms5"
+                app:layout_constraintTop_toTopOf="@+id/view3">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:maxLines="1"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="0dp"
+                    android:singleLine="true"
+                    android:textSize="16sp"
+                    tools:text="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <include
+        android:id="@+id/viewAccountDeleted"
+        layout="@layout/view_account_deleted"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

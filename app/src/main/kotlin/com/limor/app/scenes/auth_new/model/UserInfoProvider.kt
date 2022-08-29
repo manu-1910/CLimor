@@ -16,6 +16,8 @@ import com.limor.app.scenes.auth_new.data.DobInfo.Companion.parseForUserCreation
 import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
 import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import com.limor.app.scenes.auth_new.util.JwtChecker
+import com.limor.app.uimodels.UserExistsModel
+import com.limor.app.uimodels.mapToUIModel
 import com.onesignal.OneSignal
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
@@ -62,8 +64,8 @@ class UserInfoProvider @Inject constructor(
     val userInfoProviderErrorLiveData: LiveData<Any?>
         get() = _userInfoProviderErrorLiveData
 
-    private val _userExistsLiveData = MutableLiveData<Boolean?>().apply { value = null }
-    val userExists: LiveData<Boolean?>
+    private val _userExistsLiveData = MutableLiveData<UserExistsModel?>().apply { value = null }
+    val userExists: LiveData<UserExistsModel?>
         get() = _userExistsLiveData
 
     private val _otpSent = MutableLiveData<String?>().apply { value = null }
@@ -82,6 +84,14 @@ class UserInfoProvider @Inject constructor(
         MutableLiveData<String?>().apply { value = null }
     val updateUserFirstNameAndLastNameLiveData: LiveData<String?>
         get() = _updateUserFirstNameAndLastNameLiveData
+
+    private val _otpSentForDeleteAccount = MutableLiveData<String?>().apply { value = null }
+    val otpSentDeleteAccount: LiveData<String?>
+        get() = _otpSentForDeleteAccount
+
+    private val _otpValidToDeleteUser = MutableLiveData<String?>().apply { value = null }
+    val otpValidToDeleteUser: LiveData<String?>
+        get() = _otpValidToDeleteUser
 
     @ExperimentalCoroutinesApi
     fun getUserOnboardingStatus(scope: CoroutineScope) {
@@ -184,7 +194,7 @@ class UserInfoProvider @Inject constructor(
     fun checkIfUserExistsWithThisPhoneNumber(scope: CoroutineScope, phoneNumber: String) {
         scope.launch {
             if (phoneNumber.isEmpty()) {
-                _userExistsLiveData.postValue(false)
+                _userExistsLiveData.postValue(UserExistsModel(false, isDeleted = false))
                 delay(500)
                 _userExistsLiveData.postValue(null)
             }
@@ -193,12 +203,12 @@ class UserInfoProvider @Inject constructor(
                 if (BuildConfig.DEBUG) {
                     println("Checking if $phoneNumber exists -> $response")
                 }
-                _userExistsLiveData.postValue(response)
+                _userExistsLiveData.postValue(response?.mapToUIModel() ?: UserExistsModel(false, isDeleted = false))
                 delay(500)
                 _userExistsLiveData.postValue(null)
             } catch (exception: Exception) {
                 exception.printStackTrace()
-                _userExistsLiveData.postValue(false)
+                _userExistsLiveData.postValue(UserExistsModel(false, isDeleted = false))
                 delay(500)
                 _userExistsLiveData.postValue(null)
             }
@@ -206,7 +216,7 @@ class UserInfoProvider @Inject constructor(
         }
     }
 
-    fun sendOtpToPhoneNumber(scope: CoroutineScope, phoneNumber: String, isSignInCase: Boolean, resend: Boolean = false){
+    fun sendOtpToPhoneNumber(scope: CoroutineScope, phoneNumber: String, isSignInCase: Boolean, resend: Boolean = false, reactivate: Boolean = false){
         scope.launch {
             if (phoneNumber.isEmpty()) {
                 _otpSent.postValue("Invalid phone number")
@@ -214,7 +224,7 @@ class UserInfoProvider @Inject constructor(
                 _otpSent.postValue(null)
             }
             try {
-                val response = if(isSignInCase) userRepository.sendOtpToPhoneNumber(phoneNumber) else userRepository.sendOtpForSignUp(phoneNumber)
+                val response = if(isSignInCase) userRepository.sendOtpToPhoneNumber(phoneNumber, reactivate) else userRepository.sendOtpForSignUp(phoneNumber)
                 if (BuildConfig.DEBUG) {
                     println("Sending otp to $phoneNumber -> $response")
                 }
@@ -230,10 +240,10 @@ class UserInfoProvider @Inject constructor(
         }
     }
 
-    fun validateOtp(scope: CoroutineScope, phoneNumber: String, otp: Int){
+    fun validateOtp(scope: CoroutineScope, phoneNumber: String, otp: Int, reActivate: Boolean = false){
         scope.launch(Dispatchers.Default) {
             try{
-                val response = userRepository.validateUserOtp(phoneNumber, otp)
+                val response = userRepository.validateUserOtp(phoneNumber, otp, reActivate)
                 if(BuildConfig.DEBUG){
                     println("Validating otp for sign in case $response")
                 }
@@ -259,6 +269,49 @@ class UserInfoProvider @Inject constructor(
                 _otpValidWithToken.postValue(response)
                 delay(500)
                 _otpValidWithToken.postValue(null)
+            } catch (e: Exception){
+                e.printStackTrace()
+                _otpInValid.postValue(e.localizedMessage)
+                delay(500)
+                _otpInValid.postValue(null)
+            }
+        }
+    }
+
+    fun sendOtpToPhoneNumberToDeleteUserAccount(scope: CoroutineScope, phoneNumber: String, resend: Boolean = false){
+        scope.launch {
+            if (phoneNumber.isEmpty()) {
+                _otpSentForDeleteAccount.postValue("The given phone number is invalid.")
+                delay(500)
+                _otpSentForDeleteAccount.postValue(null)
+            }
+            try {
+                val response = userRepository.sendOtpToDeleteAccount(phoneNumber)
+                if (BuildConfig.DEBUG) {
+                    println("Sending otp to $phoneNumber -> $response")
+                }
+                _otpSentForDeleteAccount.postValue(response ?: "")
+                delay(500)
+                _otpSentForDeleteAccount.postValue(null)
+            } catch (exception: Exception) {
+                exception.printStackTrace()
+                _otpSentForDeleteAccount.postValue(exception.localizedMessage)
+                delay(500)
+                _otpSentForDeleteAccount.postValue(null)
+            }
+        }
+    }
+
+    fun validateOtpToDeleteUserAccount(scope: CoroutineScope, phoneNumber: String, otp: Int){
+        scope.launch(Dispatchers.Default) {
+            try{
+                val response = userRepository.validateOtpToDeleteUser(phoneNumber, otp)
+                if(BuildConfig.DEBUG){
+                    println("Validating otp for sign in case $response")
+                }
+                _otpValidToDeleteUser.postValue(response)
+                delay(500)
+                _otpValidToDeleteUser.postValue(null)
             } catch (e: Exception){
                 e.printStackTrace()
                 _otpInValid.postValue(e.localizedMessage)

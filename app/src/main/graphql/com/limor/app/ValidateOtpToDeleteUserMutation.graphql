@@ -1,0 +1,6 @@
+mutation ValidateOtpToDeleteUser($phoneNumber: String!, $otp: Int!){
+    validateOtpToDeleteUser(phoneNumber: $phoneNumber, otp: $otp){
+        status
+        message
+    }
+}

@@ -43,25 +43,25 @@ class UserRepository @Inject constructor(val apollo: Apollo) {
         return updateUserDOBResult
     }
 
-    suspend fun getUserByPhoneNumber(phoneNumber: String): Boolean {
+    suspend fun getUserByPhoneNumber(phoneNumber: String): GetUserByPhoneNumberQuery.GetUserByPhoneNumber? {
         val query = GetUserByPhoneNumberQuery(phoneNumber)
         val queryResult = apollo.launchQuery(query)
         if (BuildConfig.DEBUG) {
             println("getUserByPhoneNumber -> ${queryResult?.data}")
         }
-        return queryResult?.data?.getUserByPhoneNumber?.isFound ?: false
+        return queryResult?.data?.getUserByPhoneNumber
     }
 
-    suspend fun sendOtpToPhoneNumber(phoneNumber: String): String?{
-        val query = SendOtpToPhoneNumberMutation(phoneNumber)
+    suspend fun sendOtpToPhoneNumber(phoneNumber: String, reactivate: Boolean): String?{
+        val query = SendOtpToPhoneNumberMutation(phoneNumber, reactivate)
         val queryResult = apollo.mutate(query)
         val result = queryResult?.data?.sendOtpToPhoneNumber?.status
         Timber.d("SendOtpToPhoneNumber -> ${queryResult?.data}")
         return result
     }
 
-    suspend fun validateUserOtp(phoneNumber: String, otp: Int): String?{
-        val query = ValidateUserOtpMutation(phoneNumber, otp)
+    suspend fun validateUserOtp(phoneNumber: String, otp: Int, reactivate: Boolean): String?{
+        val query = ValidateUserOtpMutation(phoneNumber, otp, reactivate)
         val queryResult = apollo.mutate(query)
         val result = queryResult?.data?.validateUserOtp?.customToken
         return result
@@ -79,6 +79,21 @@ class UserRepository @Inject constructor(val apollo: Apollo) {
         val query = ValidateUserOtpForSignUpMutation(phoneNumber, otp, dob)
         val queryResult = apollo.mutate(query)
         val result = queryResult?.data?.validateUserOtpForSignUp?.customToken
+        return result
+    }
+
+    suspend fun sendOtpToDeleteAccount(phoneNumber: String): String?{
+        val query = SendOtpToDeleteUserMutation(phoneNumber)
+        val queryResult = apollo.mutate(query)
+        val result = queryResult?.data?.sendOtpToDeleteUser?.status
+        Timber.d("SendOtpForDeleteUser -> ${queryResult?.data}")
+        return result
+    }
+
+    suspend fun validateOtpToDeleteUser(phoneNumber: String, otp: Int): String?{
+        val query = ValidateOtpToDeleteUserMutation(phoneNumber, otp)
+        val queryResult = apollo.mutate(query)
+        val result = queryResult?.data?.validateOtpToDeleteUser?.status
         return result
     }
 

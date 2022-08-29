@@ -29,6 +29,14 @@ import com.limor.app.scenes.auth_new.navigation.NavigationBreakpoints
 import com.limor.app.scenes.auth_new.util.PrefsHandler
 import com.limor.app.scenes.auth_new.util.ToastMaker
 import kotlinx.android.synthetic.main.fragment_new_auth_phone_code.*
+import kotlinx.android.synthetic.main.fragment_new_auth_phone_code.btnContinue
+import kotlinx.android.synthetic.main.fragment_new_auth_phone_code.etSms1
+import kotlinx.android.synthetic.main.fragment_new_auth_phone_code.etSms2
+import kotlinx.android.synthetic.main.fragment_new_auth_phone_code.etSms3
+import kotlinx.android.synthetic.main.fragment_new_auth_phone_code.etSms4
+import kotlinx.android.synthetic.main.fragment_new_auth_phone_code.etSms5
+import kotlinx.android.synthetic.main.fragment_new_auth_phone_code.etSms6
+import kotlinx.android.synthetic.main.fragment_verify_otp_for_account_deletion.*
 
 
 class FragmentVerifyPhoneNumber : Fragment() {

@@ -39,6 +39,13 @@
             app:exitAnim="@anim/slide_out_left_exit_no_alpha"
             app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
             app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha"/>
+        <action
+            android:id="@+id/action_fragment_settings_to_fragment_delete_account"
+            app:destination="@id/dialog_delete_account_phone_number_input_pop_up"
+            app:enterAnim="@anim/slide_in_right_enter_no_alpha"
+            app:exitAnim="@anim/slide_out_left_exit_no_alpha"
+            app:popEnterAnim="@anim/slide_in_left_pop_enter_no_alpha"
+            app:popExitAnim="@anim/slide_out_right_pop_exit_no_alpha" />
     </fragment>
 
 
@@ -71,5 +78,28 @@
         android:label="EditProfileFragment"
         tools:layout="@layout/fragment_edit_profile">
     </fragment>
+
+    <dialog
+        android:id="@+id/dialog_delete_account_phone_number_input_pop_up"
+        android:name="com.limor.app.scenes.main_new.fragments.FragmentDeleteAccountPhoneNumberInput"
+        android:label="DialogDeleteAccountPhoneNumberInputPopUp"
+        tools:layout="@layout/fragment_delete_account_phone_number_input">
+        <action
+            android:id="@+id/action_fragment_delete_account_to_fragment_country_code"
+            app:destination="@id/fragment_country_code"/>
+        <action
+            android:id="@+id/action_fragment_delete_account_to_fragment_verify_otp"
+            app:destination="@id/fragment_verify_otp"/>
+    </dialog>
+
+    <fragment
+        android:id="@+id/fragment_verify_otp"
+        android:name="com.limor.app.scenes.main_new.fragments.FragmentVerifyOtpForAccountDeletion"/>
+
+    <dialog
+        android:id="@+id/fragment_country_code"
+        android:name="com.limor.app.scenes.auth_new.fragments.FragmentCountryCode"
+        android:label="CountryCode"
+        tools:layout="@layout/fragment_country_code" />
 
 </navigation>

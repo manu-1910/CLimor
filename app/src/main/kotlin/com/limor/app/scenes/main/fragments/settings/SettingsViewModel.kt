@@ -1,13 +1,17 @@
 package com.limor.app.scenes.main.fragments.settings
 
+import android.content.res.AssetManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.limor.app.*
 import com.limor.app.apollo.GeneralInfoRepository
+import com.limor.app.scenes.auth_new.data.Country
+import com.limor.app.scenes.auth_new.model.CountriesListProvider
 import com.limor.app.scenes.auth_new.model.GendersProvider
 import com.limor.app.scenes.auth_new.model.UserInfoProvider
+import com.limor.app.scenes.auth_new.util.PhoneNumberChecker
 import com.limor.app.uimodels.CastUIModel
 import com.limor.app.uimodels.UserUIModel
 import com.limor.app.uimodels.mapToUIModel
@@ -26,6 +30,16 @@ class SettingsViewModel @Inject constructor(
         MutableLiveData<String>()
     val settingsToolBarTitle: LiveData<String>
         get() = _settingsToolBarTitle
+
+    private var _showLogoInToolBar =
+        MutableLiveData<Boolean?>()
+    val showLogoInToolBar: LiveData<Boolean?>
+        get() = _showLogoInToolBar
+
+    private var _showToolBar =
+        MutableLiveData<Boolean?>()
+    val showToolBar: LiveData<Boolean?>
+        get() = _showToolBar
 
     var blockedUsersLimit: Int = -1
     var blockUsersOffset: Int = 0
@@ -278,6 +292,16 @@ class SettingsViewModel @Inject constructor(
     fun setToolbarTitle(title: String) {
         _settingsToolBarTitle.value = title
         clearBlockedUsers()
+    }
+
+    fun showLogoInToolbar(show: Boolean){
+        _showLogoInToolBar.value = show
+        _showLogoInToolBar.value = null
+    }
+
+    fun showToolbar(show: Boolean){
+        _showToolBar.value = show
+        _showToolBar.value = null
     }
 
     fun createBlockedUser(id: Int) {

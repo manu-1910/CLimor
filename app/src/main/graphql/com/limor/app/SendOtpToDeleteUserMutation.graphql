@@ -1,0 +1,6 @@
+mutation SendOtpToDeleteUserMutation($phoneNumber: String!){
+    sendOtpToDeleteUser(phoneNumber: $phoneNumber){
+        status
+        message
+    }
+}

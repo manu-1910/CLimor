@@ -1,5 +1,5 @@
-mutation SendOtpToPhoneNumber($phoneNumber: String!){
-    sendOtpToPhoneNumber(phoneNumber: $phoneNumber){
+mutation SendOtpToPhoneNumber($phoneNumber: String!, $reActivateSoftDeletedUser: Boolean!){
+    sendOtpToPhoneNumber(phoneNumber: $phoneNumber, reActivateSoftDeletedUser: $reActivateSoftDeletedUser){
         status
         message
     }

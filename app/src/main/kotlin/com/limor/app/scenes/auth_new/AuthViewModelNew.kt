@@ -7,6 +7,7 @@ import android.content.res.AssetManager
 import android.os.CountDownTimer
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.*
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.limor.app.BuildConfig
 import com.limor.app.CreateVendorMutation
 import com.limor.app.GendersQuery
@@ -19,6 +20,7 @@ import com.limor.app.scenes.auth_new.firebase.PhoneAuthHandler
 import com.limor.app.scenes.auth_new.model.*
 import com.limor.app.scenes.auth_new.model.UserInfoProvider.Companion.userNameRegExCheck
 import com.limor.app.scenes.auth_new.util.*
+import com.limor.app.uimodels.UserExistsModel
 import com.tonyodev.fetch2.fetch.LiveSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -80,16 +82,22 @@ class AuthViewModelNew @Inject constructor(
 
     private var countDownTimer: CountDownTimer? = null
 
+    private var reActivate: Boolean = false
+
+    fun setReactivate(reactivate: Boolean){
+        reActivate = reactivate
+    }
+
     fun resendCode() {
         //phoneAuthHandler.sendCodeToPhone(formattedPhone, resend = true, signInCase)
-        userInfoProvider.sendOtpToPhoneNumber(viewModelScope, formattedPhone, signInCase)
+        userInfoProvider.sendOtpToPhoneNumber(viewModelScope, formattedPhone, signInCase, reactivate = reActivate)
     }
 
     val otpSent:LiveData<String?>
         get() = userInfoProvider.otpSent.apply { null }
 
     fun sendOtp(){
-        userInfoProvider.sendOtpToPhoneNumber(viewModelScope, formattedPhone, signInCase)
+        userInfoProvider.sendOtpToPhoneNumber(viewModelScope, formattedPhone, signInCase, reactivate = reActivate)
     }
 
     fun enableResend() {
@@ -117,10 +125,11 @@ class AuthViewModelNew @Inject constructor(
     val phoneIsValidLiveData: LiveData<Boolean>
         get() = _validatePhoneLiveData
 
-    val phoneNumberExistsLiveData: LiveData<Boolean?>
+    val phoneNumberExistsLiveData: LiveData<UserExistsModel?>
         get() = userInfoProvider.userExists
 
     fun checkPhoneNumberExistence() {
+        setReactivate(false)
         userInfoProvider.checkIfUserExistsWithThisPhoneNumber(viewModelScope, formattedPhone)
     }
 
@@ -141,8 +150,16 @@ class AuthViewModelNew @Inject constructor(
             if (currentCountry.isEmpty) null
             else currentCountry
 
-    fun setCountrySelected(country: Country) {
+    private val _countrySelectedManually = MutableLiveData<Boolean?>().apply { value = null }
+
+    val countrySelectedManuallyLiveData: LiveData<Boolean?>
+        get() = _countrySelectedManually
+
+    fun setCountrySelected(country: Country, manuallySelectedFromList: Boolean = false) {
         currentCountry = country
+        if(manuallySelectedFromList){
+            _countrySelectedManually.postValue(true)
+        }
         updatePhoneValidation()
     }
 
@@ -193,10 +210,29 @@ class AuthViewModelNew @Inject constructor(
         val value = codes.joinToString(separator = "")
         //phoneAuthHandler.enterCodeAndSignIn(value)
         if (signInCase){
-            userInfoProvider.validateOtp(viewModelScope, formattedPhone, value.toInt())
+            userInfoProvider.validateOtp(viewModelScope, formattedPhone, value.toInt(), reActivate = reActivate)
         } else{
             userInfoProvider.validateOtpForSignUp(viewModelScope, formattedPhone, value.toInt(), _datePicked.value?.mills ?: 0)
         }
+    }
+
+    /*
+     *   Delete user account
+     */
+
+    val otpValidToDeleteUser: LiveData<String?>
+        get() = userInfoProvider.otpValidToDeleteUser
+
+    val otpSentToDeleteUser: LiveData<String?>
+        get() = userInfoProvider.otpSentDeleteAccount
+
+    fun sendOtpToDeleteUserAccount(){
+        userInfoProvider.sendOtpToPhoneNumberToDeleteUserAccount(viewModelScope, formattedPhone)
+    }
+
+    fun validateOtpToDeleteUserAccount(codes: List<String?>){
+        val value = codes.joinToString(separator = "")
+        userInfoProvider.validateOtpToDeleteUserAccount(viewModelScope, formattedPhone, value.toInt())
     }
 
     /* Email validation*/
@@ -500,6 +536,7 @@ class AuthViewModelNew @Inject constructor(
         get() = userInfoProvider.updateUserFirstNameAndLastNameLiveData
 
     fun checkJwtForLuidAndProceed() {
+        setReactivate(false)
         viewModelScope.launch {
             val userHasBeenCreatedBefore = JwtChecker.isFirebaseJwtContainsLuid()
             if (userHasBeenCreatedBefore)

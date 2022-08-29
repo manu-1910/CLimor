@@ -31,6 +31,7 @@ import com.limor.app.scenes.auth_new.AuthViewModelNew
 import com.limor.app.scenes.auth_new.data.Country
 import com.limor.app.scenes.auth_new.data.SignInMethod
 import com.limor.app.scenes.auth_new.util.AfterTextWatcher
+import com.limor.app.scenes.utils.LimorDialog
 import kotlinx.android.synthetic.main.fragment_new_auth_phone_enter.*
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.*
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.btnContinue
@@ -40,6 +41,7 @@ import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.etEnterPhoneInne
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.etPhoneCode
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in.textView9
 import kotlinx.android.synthetic.main.fragment_new_auth_sign_in_or_up.*
+import kotlinx.android.synthetic.main.fragment_verify_otp_for_account_deletion.*
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
@@ -254,9 +256,22 @@ class FragmentSignIn : Fragment() {
 
         model.phoneNumberExistsLiveData.observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
-            if (it) {
+            if(it.isFound == true && it.isDeleted == true){
+                LimorDialog(layoutInflater).apply {
+                    setTitle(R.string.reactivate_account)
+                    setMessage(R.string.reactivate_message)
+                    setIcon(R.drawable.ic_reactivate)
+                    addButton(R.string.cancel, false)
+                    addButton(R.string.continue_button, true) {
+                        model.setReactivate(true)
+                        model.sendOtp()
+                    }
+                }.show()
+            }
+            else if (it.isFound == true) {
                 model.sendOtp()
             } else {
+                btnContinue.isEnabled = true
                 val description = resources.getString(R.string.sign_in_error_try_sign_up)
                 tvExistingUserEmailSignInDesc.text = description
                 tvExistingUserEmailSignInDesc.visibility = View.VISIBLE

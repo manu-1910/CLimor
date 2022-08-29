@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -67,6 +68,29 @@ class SettingsActivity : AppCompatActivity(), HasSupportFragmentInjector {
         binding.toolbar.tvToolbarTitle.text  = getString(R.string.settings)
         model.settingsToolBarTitle.observe(this,{
             binding.toolbar.tvToolbarTitle.text  = it
+        })
+
+        model.showLogoInToolBar.observe(this,{
+            if(it == null){
+                return@observe
+            }
+            if(it){
+                binding.toolbar.logoIV.visibility = View.VISIBLE
+                binding.toolbar.tvToolbarTitle.visibility = View.GONE
+            } else{
+                binding.toolbar.logoIV.visibility = View.GONE
+                binding.toolbar.tvToolbarTitle.visibility = View.VISIBLE
+            }
+        })
+
+        model.showToolBar.observe(this, {
+            if(it == null)
+                return@observe
+            if(!it){
+                binding.toolbar.toolbar.visibility = View.GONE
+            } else{
+                binding.toolbar.toolbar.visibility = View.VISIBLE
+            }
         })
 
         setupNavigationController()

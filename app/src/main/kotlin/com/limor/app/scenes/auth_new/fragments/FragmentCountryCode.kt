@@ -4,7 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import android.view.WindowManager
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,7 +15,7 @@ import com.limor.app.scenes.auth_new.data.Country
 import com.limor.app.scenes.auth_new.view.CountrySection
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter
 
-class FragmentCountryCode : Fragment() {
+class FragmentCountryCode : DialogFragment() {
 
     private val model: AuthViewModelNew by activityViewModels()
 
@@ -35,6 +36,14 @@ class FragmentCountryCode : Fragment() {
         return binding.root
     }
 
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.setLayout(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT
+        )
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         subscribeToViewModel()
@@ -53,7 +62,7 @@ class FragmentCountryCode : Fragment() {
         for ((key, value) in groupedCountries.entries) {
             if (value.isNotEmpty()) {
                 sectionedAdapter!!.addSection(CountrySection(key, value) { country ->
-                    model.setCountrySelected(country)
+                    model.setCountrySelected(country, true)
                     findNavController().navigateUp()
                 })
             }
