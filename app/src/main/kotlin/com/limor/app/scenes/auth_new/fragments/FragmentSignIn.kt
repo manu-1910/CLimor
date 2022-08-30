@@ -261,10 +261,13 @@ class FragmentSignIn : Fragment() {
                     setTitle(R.string.reactivate_account)
                     setMessage(R.string.reactivate_message)
                     setIcon(R.drawable.ic_reactivate)
-                    addButton(R.string.cancel, false)
+                    addButton(R.string.cancel, false){
+                        btnContinue.isEnabled = true
+                    }
                     addButton(R.string.continue_button, true) {
                         model.setReactivate(true)
                         model.sendOtp()
+                        dismiss()
                     }
                 }.show()
             }
