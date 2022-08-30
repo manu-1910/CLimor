@@ -77,6 +77,7 @@ class FragmentDeleteAccountPhoneNumberInput : DialogFragment() {
         settingsViewModel.showLogoInToolbar(false)
         setClickListeners()
         fetchRequiredData()
+        setFocusListeners()
         setTextChangeListener()
         subscribeToViewModel()
     }
@@ -96,6 +97,38 @@ class FragmentDeleteAccountPhoneNumberInput : DialogFragment() {
         btnContinue.setOnClickListener {
             model.sendOtpToDeleteUserAccount()
             btnContinue.isEnabled = false
+        }
+    }
+
+    private fun setFocusListeners(){
+        etEnterPhoneInner.setOnFocusChangeListener { view, hasFocus ->
+            if(hasFocus){
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+                    scrollView.setOnApplyWindowInsetsListener { _, windowInsets ->
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            val imeHeight = windowInsets.getInsets(WindowInsets.Type.ime()).bottom
+                            scrollView.setPadding(0, 0, 0, imeHeight)
+                            val insets = windowInsets.getInsets(WindowInsets.Type.ime() or WindowInsets.Type.systemGestures())
+                            insets
+                        }
+                        windowInsets
+                    }
+                } else{
+                    dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+                }
+            } else{
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+                    scrollView.setOnApplyWindowInsetsListener { _, windowInsets ->
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            val imeHeight = windowInsets.getInsets(WindowInsets.Type.ime()).bottom
+                            scrollView.setPadding(0, 0, 0, 0)
+                            val insets = windowInsets.getInsets(WindowInsets.Type.ime() or WindowInsets.Type.systemGestures())
+                            insets
+                        }
+                        windowInsets
+                    }
+                }
+            }
         }
     }
 
