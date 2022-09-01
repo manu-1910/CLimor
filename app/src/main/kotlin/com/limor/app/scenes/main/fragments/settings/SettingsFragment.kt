@@ -134,6 +134,9 @@ class SettingsFragment : BaseFragment() {
         val user = currentUser ?: return
         binding.swPushNotifications.isChecked = user.hasNotificationsEnabled()
         binding.swSounds.isChecked = PrefsHandler.areSoundsEnabled(requireContext())
+        if(user.isPatron == true){
+            binding.lytDeleteAccount.visibility = View.GONE
+        }
     }
 
     private fun hideLoading() {
