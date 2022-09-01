@@ -88,7 +88,7 @@
                 android:layout_height="58dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="16dp"
-                android:hint="@string/enter_phone_hint"
+                android:hint="@string/phone_number"
                 app:boxStrokeColor="@color/colorAccent"
                 app:hintTextColor="@color/colorAccent"
                 app:errorEnabled="true"
