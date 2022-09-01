@@ -147,6 +147,9 @@ class FragmentDeleteAccountPhoneNumberInput : DialogFragment() {
             override fun afterTextChanged(s: Editable?) {
                 model.setPhoneChanged(s?.toString() ?: "")
                 etEnterPhone.error = null
+                if(errorTV.visibility == View.VISIBLE){
+                    errorTV.visibility = View.GONE
+                }
             }
         })
     }
@@ -202,9 +205,8 @@ class FragmentDeleteAccountPhoneNumberInput : DialogFragment() {
     }
 
     private fun showErrorInSnackBar(errorMessage: String){
-        Snackbar.make(parentLayout, errorMessage, Snackbar.LENGTH_SHORT)
-            .setTextColor(resources.getColor(android.R.color.white))
-            .show()
+        errorTV.visibility = View.VISIBLE
+        errorTV.text = errorMessage
     }
 
 }
