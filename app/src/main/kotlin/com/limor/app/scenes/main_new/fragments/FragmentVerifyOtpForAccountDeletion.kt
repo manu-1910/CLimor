@@ -18,6 +18,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -51,14 +52,12 @@ import javax.inject.Inject
 import com.google.android.material.snackbar.Snackbar
 
 
-
-
 class FragmentVerifyOtpForAccountDeletion : Fragment() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val model: AuthViewModelNew by activityViewModels { viewModelFactory }
-    private val settingsViewModel: SettingsViewModel by activityViewModels {viewModelFactory}
+    private val settingsViewModel: SettingsViewModel by activityViewModels { viewModelFactory }
 
     private val smsCodeEtList = mutableListOf<TextInputLayout>()
 
@@ -91,7 +90,7 @@ class FragmentVerifyOtpForAccountDeletion : Fragment() {
         AndroidSupportInjection.inject(this)
     }
 
-    private fun initialiseUI(){
+    private fun initialiseUI() {
         phoneNumberTV.text = model.formattedPhone
     }
 
@@ -104,11 +103,11 @@ class FragmentVerifyOtpForAccountDeletion : Fragment() {
         smsCodeEtList.add(etSms6)
     }
 
-    private fun setClickListeners(){
+    private fun setClickListeners() {
         btnContinue.setOnClickListener {
             LimorDialog(layoutInflater).apply {
                 setTitle("Delete your Limor account?")
-                addButton(R.string.cancel, true){
+                addButton(R.string.cancel, true) {
                     dismiss()
                 }
                 addButton(R.string.delete, false) {
@@ -121,7 +120,7 @@ class FragmentVerifyOtpForAccountDeletion : Fragment() {
         }
     }
 
-    private fun setTextChangeListener(){
+    private fun setTextChangeListener() {
         for (et in smsCodeEtList) {
             val currentIndex = smsCodeEtList.indexOf(et)
             setOnTextChangedListener(et.editText!!, currentIndex)
@@ -155,20 +154,20 @@ class FragmentVerifyOtpForAccountDeletion : Fragment() {
         model.validateOtpToDeleteUserAccount(smsCodesList())
     }
 
-    private fun subscribeToViewModel(){
+    private fun subscribeToViewModel() {
         model.otpValidToDeleteUser.observe(viewLifecycleOwner, {
-            if(it == null){
+            if (it == null) {
                 return@observe
             }
             verifyLayout.visibility = View.GONE
             viewAccountDeleted.visibility = View.VISIBLE
             settingsViewModel.showToolbar(false)
-            Handler(Looper.getMainLooper()).postDelayed(Runnable{
+            Handler(Looper.getMainLooper()).postDelayed(Runnable {
                 logout()
             }, 5000)
         })
         model.otpInValid.observe(viewLifecycleOwner, {
-            if(it == null){
+            if (it == null) {
                 return@observe
             }
             model.cancelTimers()
@@ -185,11 +184,10 @@ class FragmentVerifyOtpForAccountDeletion : Fragment() {
             showErrorInSnackBar(it)
         })
         model.resendButtonCountDownLiveData.observe(viewLifecycleOwner, {
-            if (it == null){
+            if (it == null) {
                 resendTV.setText(R.string.didn_t_get_the_code_resend_it)
                 resendTV.setTextColor(resources.getColor(R.color.blue500))
-            }
-            else{
+            } else {
                 resendTV.text =
                     getString(R.string.resend_code_in) + (if (it < 10) " 0$it seconds" else " $it seconds")
                 resendTV.setTextColor(resources.getColor(R.color.ef_grey))
@@ -197,25 +195,35 @@ class FragmentVerifyOtpForAccountDeletion : Fragment() {
         })
         model.resendButtonEnableLiveData.observe(viewLifecycleOwner, {
             resendTV.isEnabled = it
-            if(!it){
+            if (!it) {
                 resendTV.setText(R.string.didn_t_get_the_code_resend_it)
             }
         })
         model.otpSentToDeleteUser.observe(viewLifecycleOwner, {
-            if(it == null){
+            if (it == null) {
                 return@observe
             }
-            if(it.toString().lowercase() == "success"){
+            if (it.toString().lowercase() == "success") {
                 model.enableResend()
                 Toast.makeText(activity, "Code has been sent", Toast.LENGTH_LONG)
                     .show()
-            } else{
+            } else {
                 showErrorInSnackBar(it)
+            }
+        })
+        model.smsContinueButtonEnabled.observe(viewLifecycleOwner, Observer {
+            if (it == null)
+                return@Observer
+            btnContinue.isEnabled = it
+            if (it == true) {
+                context?.resources?.let { btnContinue.setBackgroundColor(it.getColor(R.color.red600)) }
+            } else {
+                context?.resources?.let { btnContinue.setBackgroundColor(it.getColor(R.color.bg_grey)) }
             }
         })
     }
 
-    private fun showErrorInSnackBar(errorMessage: String){
+    private fun showErrorInSnackBar(errorMessage: String) {
         Snackbar.make(parentLayout, errorMessage, Snackbar.LENGTH_SHORT)
             .setTextColor(resources.getColor(android.R.color.white))
             .show()
@@ -227,10 +235,7 @@ class FragmentVerifyOtpForAccountDeletion : Fragment() {
         et.setOnEditorActionListener { textView, actionId, keyEvent ->
             when (actionId and EditorInfo.IME_MASK_ACTION) {
                 EditorInfo.IME_ACTION_DONE -> {
-                    if (model.smsContinueButtonEnabled.value == true)
-                        validateSmsCode()
-                    btnContinue.isEnabled = true
-                    context?.resources?.let { btnContinue.setBackgroundColor(it.getColor(R.color.red600)) }
+                    model.setSmsCodeForCheck(smsCodesList())
                 }
 
                 EditorInfo.IME_ACTION_NEXT -> {
