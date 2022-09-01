@@ -2,26 +2,30 @@ package com.limor.app.scenes.main_new.fragments
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.SpannableString
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doOnTextChanged
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
 import com.limor.app.App
 import com.limor.app.R
@@ -50,7 +54,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.google.android.material.snackbar.Snackbar
-
 
 class FragmentVerifyOtpForAccountDeletion : Fragment() {
 
@@ -92,6 +95,24 @@ class FragmentVerifyOtpForAccountDeletion : Fragment() {
 
     private fun initialiseUI() {
         phoneNumberTV.text = model.formattedPhone
+        val spannableString = SpannableString("Your In-app purchases, active subscriptions will be permanently deleted. Visit Subscriptions.")
+        val clickableSpan: ClickableSpan = object : ClickableSpan() {
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                ds.color = resources.getColor(R.color.colorAccentDark)
+                ds.isUnderlineText = false
+            }
+
+            override fun onClick(widget: View) {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = Uri.parse("https://play.google.com/store/account/subscriptions")
+                startActivity(intent)
+            }
+        }
+        spannableString.setSpan(clickableSpan,73, spannableString.length, 0)
+        spannableString.setSpan(ForegroundColorSpan(resources.getColor(R.color.colorAccent)),73, spannableString.length, 0)
+        subsDescriptionTV.movementMethod = LinkMovementMethod.getInstance()
+        subsDescriptionTV.text = spannableString
     }
 
     private fun createSmsCodeFieldsList() {
