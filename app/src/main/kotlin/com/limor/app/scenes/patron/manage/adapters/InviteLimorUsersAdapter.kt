@@ -15,6 +15,9 @@ import com.limor.app.uimodels.UserUIModel
 import de.hdodenhof.circleimageview.CircleImageView
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.design.snackbar
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+import kotlin.math.absoluteValue
 
 class InviteLimorUsersAdapter(
     private val users: ArrayList<UserUIModel>,
@@ -52,6 +55,9 @@ class InviteLimorUsersAdapter(
             "ALREADY_INVITED" -> {
                 holder.alreadyInvited()
             }
+            "NOT_ELIGIBLE" -> {
+                holder.isNotEligible()
+            }
 
         }
 
@@ -87,30 +93,35 @@ class InviteLimorUsersAdapter(
             adapter: InviteLimorUsersAdapter,
             position: Int,
         ) {
-                inviteButton.text = accountName.context.getString(R.string.invite)
-                inviteButton.isEnabled = true
+            inviteButton.text = accountName.context.getString(R.string.invite)
+            inviteButton.isEnabled = true
+            inviteButton.backgroundColor = ContextCompat.getColor(
+                accountName.context,
+                R.color.colorAccent
+            )
+            inviteButton.setOnClickListener {
+                val count = CommonsKt.user?.availableInvitations ?: 0
+                if (count > 0) {
+                    userUIModel.patronStatus = "JOINED"
+                    adapter.updateItemAt(position, userUIModel)
+                    CommonsKt.user?.availableInvitations = if(count-1 < 0) 0 else count-1
+                    onSelected(userUIModel)
+                } else {
+                    inviteButton.snackbar("No More invites left!")
+                }
+            }
+            if((CommonsKt.user?.availableInvitations ?: 0) == 0){
+                inviteButton.isEnabled = false
                 inviteButton.backgroundColor = ContextCompat.getColor(
                     accountName.context,
-                    R.color.colorAccent
+                    R.color.main_button_background_follow
                 )
-                inviteButton.setOnClickListener {
-                    val count = CommonsKt.user?.availableInvitations ?: 0
-                    if (count > 0) {
-                        userUIModel.patronStatus = /*"ALREADY_INVITED"*/"JOINED"
-                        adapter.updateItemAt(position, userUIModel)
-                        CommonsKt.user?.availableInvitations = if(count-1 < 0) 0 else count-1
-                        onSelected(userUIModel)
-                    } else {
-                        inviteButton.snackbar("No More invites left!")
-                    }
-                }
-                if((CommonsKt.user?.availableInvitations ?: 0) == 0){
-                    inviteButton.isEnabled = false
-                    inviteButton.backgroundColor = ContextCompat.getColor(
-                        accountName.context,
-                        R.color.main_button_background_follow
-                    )
-                }
+            }
+        }
+
+        fun isNotEligible(){
+            inviteButton.text = accountName.context.getString(R.string.not_eligible)
+            inviteButton.isEnabled = false
         }
 
         fun alreadyInvited() {

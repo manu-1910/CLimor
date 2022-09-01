@@ -1100,5 +1100,6 @@
 
     <string name="reactivate_account">Reactivate Account</string>
     <string name="reactivate_message">This number already has an account which is deleted. Would you like to reactivate your account?</string>
+    <string name="not_eligible">Not Eligible</string>
 
 </resources>
