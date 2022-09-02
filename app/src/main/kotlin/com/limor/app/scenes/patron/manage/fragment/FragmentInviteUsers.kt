@@ -129,7 +129,7 @@ class FragmentInviteUsers : Fragment(), Injectable {
 
     private fun performSearch(searchItem: String) {
         searchString = searchItem
-        if (searchString.length > 3) {
+        if (searchString.length > 2) {
             model.search(searchItem)
         } else{
             hideLimorUsersLayout()
