@@ -79,7 +79,8 @@
             android:name=".scenes.splash.SplashActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar.FullScreen">
+            android:theme="@style/AppTheme.NoActionBar.FullScreen"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -254,7 +255,8 @@
             android:exported="false" /> <!-- FCM -->
         <service
             android:name=".scenes.notifications.FirebaseMessenger"
-            android:stopWithTask="false">
+            android:stopWithTask="false"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -276,6 +278,7 @@
             android:name=".scenes.auth_new.AuthActivityNew"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait"
+            android:exported="true"
             android:theme="@style/MaterialMainTheme.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -342,7 +345,8 @@
             android:screenOrientation="portrait"
             android:theme="@style/MaterialMainTheme.FullScreen"></activity>
 
-        <receiver android:name=".receivers.PhoneCallReceiver">
+        <receiver android:name=".receivers.PhoneCallReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
