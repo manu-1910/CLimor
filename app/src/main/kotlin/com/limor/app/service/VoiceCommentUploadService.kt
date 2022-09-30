@@ -208,8 +208,13 @@ class VoiceCommentUploadService: Service() {
             createNotificationChannel(UPLOAD_CHANNEL_ID, "Uploading");
         }
 
+        var flags: Int = PendingIntent.FLAG_UPDATE_CURRENT
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+            flags = flags or PendingIntent.FLAG_IMMUTABLE
+        }
+
         val pendingIntent = Intent(applicationContext, MainActivityNew::class.java).let { ni ->
-            PendingIntent.getActivity(applicationContext, 0, ni, PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.getActivity(applicationContext, 0, ni, flags)
         }
 
         val notification = NotificationCompat.Builder(this, UPLOAD_CHANNEL_ID).apply {

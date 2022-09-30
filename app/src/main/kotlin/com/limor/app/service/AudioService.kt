@@ -266,11 +266,15 @@ class AudioService : Service() {
                 @Nullable
                 override fun createCurrentContentIntent(player: Player): PendingIntent {
                     // TODO use special intent argument to open player view inside activity
+                    var flags: Int = PendingIntent.FLAG_UPDATE_CURRENT
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+                        flags = flags or PendingIntent.FLAG_IMMUTABLE
+                    }
                     return PendingIntent.getActivity(
                         applicationContext,
                         0,
                         Intent(applicationContext, MainActivityNew::class.java),
-                        PendingIntent.FLAG_UPDATE_CURRENT
+                        flags
                     )
                 }
 

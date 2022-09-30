@@ -79,9 +79,13 @@ class FirebaseMessenger : FirebaseMessagingService() {
         }
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        var flags: Int = PendingIntent.FLAG_UPDATE_CURRENT
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+           flags = flags or PendingIntent.FLAG_IMMUTABLE
+        }
         val contentIntent = PendingIntent.getActivity(
             this, System.currentTimeMillis()
-                .toInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT
+                .toInt(), intent, flags
         )
         val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val mBuilder = NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_NAME)
