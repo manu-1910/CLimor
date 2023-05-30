@@ -31,14 +31,13 @@ android {
         targetSdkVersion build_versions.target_sdk
 
         applicationId globalConfiguration.androidApplicationId
-        versionCode 13
-        versionName "0.0.13-s"
-
+        versionCode 62
+        versionName "2.6.2-a"
         testInstrumentationRunner globalConfiguration.testInstrumentationRunner
         testApplicationId globalConfiguration.testApplicationId
-        /*ndk{
+        ndk{
             abiFilters "arm64-v8a"
-        }*/
+        }
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -244,7 +243,7 @@ android {
             buildConfigField "String", "ONE_SIGNAL_APP_ID", '"ab674a40-a739-41db-bfbf-4b53d45db2c4"'
 
             minifyEnabled false
-            debuggable false
+            debuggable true
             zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
